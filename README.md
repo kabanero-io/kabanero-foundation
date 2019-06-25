@@ -32,4 +32,4 @@ The default configuration for the optional recommended Openshift components with
   - 26GB + ( 1GB * #nodes ) Memory
     - Notably elasticsearch requires a large memory node to schedule on
 
-The [](prereq-details.md) illustrates the default container resource requests and limits in a 3 node cluster.
+The following [table](prereq-details.md) illustrates the default container resource requests and limits in a 3 node cluster.

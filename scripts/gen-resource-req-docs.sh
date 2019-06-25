@@ -6,8 +6,8 @@
 
 set -Eeuox pipefail
 
-CSVFILE="kabanero-resources.csv"
-MDFILE="kabanero-resources.md"
+CSVFILE="../prereq-details.csv"
+MDFILE="../prereq-details.md"
 KABANERO_NAMESPACES=( "istio-system" "kabanero" "knative-eventing" "knative-serving" "olm" "tekton-pipelines" )
 OPENSHIFT_NAMESPACES=( "openshift-infra" "openshift-logging" "openshift-monitoring" )
 

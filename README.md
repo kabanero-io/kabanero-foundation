@@ -51,3 +51,22 @@ The default configuration for the optional recommended Openshift components with
     - Notably elasticsearch requires a large memory node to schedule on
 
 The following [table](prereq-details.md) illustrates the default container resource requests and limits in a 3 node cluster.
+
+# appsody Application Requirements
+
+## appsody Hardware Capactiy
+
+appsody currently includes 5 different stacks:
+  - java-microprofile (249 MB)
+  - java-spring-boot2 (269 MB)
+  - nodejs (397 MB)
+  - nodejs-express (401 MB)
+  - swift (472 MB)
+  
+ Estimated required capactiy for running 10 appsody applications:
+  - java-microprofile: 2650 MB ((249 + 16) * 10)
+  - java-spring-boot2: 2850 MB ((269 + 16) * 10)
+  - nodejs: 4130 MB ((397 + 16) * 10)
+  - nodejs-express: 4170 MB ((401 + 16) * 10)
+  - swift: 4880 MB ((472 + 16) * 10)
+ 

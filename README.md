@@ -21,7 +21,7 @@ The Kabanero Foundation Instance is a deployment of a Kabanero collection in a s
 ### Software Installation
 
 - [OKD](https://www.okd.io/) v3.11.0+
-- [Operator Lifecycle Manager](https://github.com/operator-framework/operator-lifecycle-manager/releases) 0.10.0+
+- [Operator Lifecycle Manager](https://github.com/operator-framework/operator-lifecycle-manager/releases) 0.10.0+ (Optional)
 
 
 ### Cluster Hardware Capacity
@@ -51,3 +51,23 @@ The default configuration for the optional recommended Openshift components with
     - Notably elasticsearch requires a large memory node to schedule on
 
 The following [table](prereq-details.md) illustrates the default container resource requests and limits in a 3 node cluster.
+
+# appsody Application Requirements
+
+## appsody Hardware Capactiy
+
+appsody currently includes 5 different stacks:
+  - java-microprofile (249 MB)
+  - java-spring-boot2 (269 MB)
+  - nodejs (397 MB)
+  - nodejs-express (401 MB)
+  - swift (472 MB)
+  
+ Estimated required capactiy for running 10 appsody applications (Assuming roughly 16MB per application):
+  - java-microprofile: **2650 MB**
+  - java-spring-boot2: **2850 MB**
+  - nodejs: **4130 MB**
+  - nodejs-express: **4170 MB**
+  - swift: **4880 MB**
+ 
+ 

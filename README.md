@@ -21,7 +21,7 @@ The Kabanero Foundation Instance is a deployment of a Kabanero collection in a s
 ### Software Installation
 
 - [OKD](https://www.okd.io/) v3.11.0+
-- [Operator Lifecycle Manager](https://github.com/operator-framework/operator-lifecycle-manager/releases) 0.10.0+
+- [Operator Lifecycle Manager](https://github.com/operator-framework/operator-lifecycle-manager/releases) 0.10.0+ (Optional)
 
 
 ### Cluster Hardware Capacity

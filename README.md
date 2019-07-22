@@ -64,10 +64,10 @@ appsody currently includes 5 different stacks:
   - swift (472 MB)
   
  Estimated required capactiy for running 10 appsody applications (Assuming roughly 16MB for the application):
-  - java-microprofile: **2650 MB** ((249 + 16) * 10)
-  - java-spring-boot2: **2850 MB** ((269 + 16) * 10)
-  - nodejs: **4130 MB** ((397 + 16) * 10)
-  - nodejs-express: **4170 MB** ((401 + 16) * 10)
-  - swift: **4880 MB** ((472 + 16) * 10)
+  - java-microprofile: **2650 MB**
+  - java-spring-boot2: **2850 MB**
+  - nodejs: **4130 MB**
+  - nodejs-express: **4170 MB**
+  - swift: **4880 MB**
  
  

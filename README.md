@@ -56,4 +56,10 @@ appsody currently includes 5 different stacks:
   - nodejs-express: **4170 MB**
   - swift: **4880 MB**
  
+ # Kabanero Restrictions
+
+  - The Kabanero Collection has a single Java-MicroProfile Appsody Stack. 
+  - The Kabanero Operator automatically activates the example featured collection and only in the `kabanero` namespace.
+  - Kabanero only supports the example featured collection.
+  - The Kabanero Operator requires `cluster-admin` privileges.
  

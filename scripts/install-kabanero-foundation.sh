@@ -107,6 +107,7 @@ release=v0.1.1
 # Webhook Extension #
 curl -L https://github.com/tektoncd/dashboard/releases/download/${release}/webhooks-extension_release.yaml \
   | sed 's/namespace: tekton-pipelines/namespace: kabanero/' \
+  | sed 's/value: tekton-pipelines/value: kabanero/' \
   | oc apply --filename -
 
 # Dashboard #

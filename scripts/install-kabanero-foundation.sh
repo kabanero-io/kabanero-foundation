@@ -17,37 +17,6 @@ then
   read openshift_master_default_subdomain
 fi
 
-### Operator Lifecycle Manager ###
-
-release=0.11.0
-url=https://github.com/operator-framework/operator-lifecycle-manager/releases/download/${release}
-namespace=olm
-
-oc apply -f ${url}/crds.yaml
-oc apply -f ${url}/olm.yaml
-
-# wait for deployments to be ready
-oc rollout status -w deployment/olm-operator --namespace="${namespace}"
-oc rollout status -w deployment/catalog-operator --namespace="${namespace}"
-
-retries=50
-until [[ $retries == 0 || $new_csv_phase == "Succeeded" ]]; do
-    new_csv_phase=$(oc get csv -n "${namespace}" packageserver -o jsonpath='{.status.phase}' 2>/dev/null || echo "Waiting for CSV to appear")
-    if [[ $new_csv_phase != "$csv_phase" ]]; then
-        csv_phase=$new_csv_phase
-        echo "Package server phase: $csv_phase"
-    fi
-    sleep 1
-    retries=$((retries - 1))
-done
-
-if [ $retries == 0 ]; then
-    echo "CSV \"packageserver\" failed to reach phase succeeded"
-    exit 1
-fi
-
-oc rollout status -w deployment/packageserver --namespace="${namespace}"
-
 
 ### Istio ###
 

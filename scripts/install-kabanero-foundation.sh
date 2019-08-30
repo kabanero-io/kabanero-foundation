@@ -33,11 +33,16 @@ oc adm policy add-scc-to-user anyuid -z istio-pilot-service-account -n istio-sys
 oc adm policy add-scc-to-user anyuid -z istio-sidecar-injector-service-account -n istio-system
 oc adm policy add-cluster-role-to-user cluster-admin -z istio-galley-service-account -n istio-system
 oc adm policy add-scc-to-user anyuid -z cluster-local-gateway-service-account -n istio-system
-oc apply --filename https://github.com/knative/serving/releases/download/v0.5.0/istio-crds.yaml &&
-curl -L https://github.com/knative/serving/releases/download/v0.5.0/istio.yaml \
-  | sed 's/LoadBalancer/NodePort/' \
-  | oc apply --filename -
 
+ISTIO_ARCH=linux
+ISTIO_VERSION=1.1.7
+
+curl -L https://github.com/istio/istio/releases/download/$ISTIO_VERSION/istio-$ISTIO_VERSION-$ISTIO_ARCH.tar.gz | tar -zxf -
+cd istio-$ISTIO_VERSION
+for i in install/kubernetes/helm/istio-init/files/crd*yaml; do kubectl apply -f $i; done
+oc apply -f install/kubernetes/istio-demo.yaml
+cd ..
+rm -Rf istio-$ISTIO_VERSION
 
 ### Kabanero ###
 

@@ -5,7 +5,7 @@ set -Eeuox pipefail
 ### Configuration ###
 
 # Resultant Appsody container image #
-DOCKER_IMAGE="${DOCKER_IMAGE:-docker-registry.default.svc:5000/appsody-project/java-microprofile}"
+DOCKER_IMAGE="${DOCKER_IMAGE:-docker-registry.default.svc:5000/kabanero/java-microprofile}"
 
 # Appsody project GitHub repository #
 APP_REPO="${APP_REPO:-https://github.com/dacleyra/appsody-hello-world/}"
@@ -13,10 +13,10 @@ APP_REPO="${APP_REPO:-https://github.com/dacleyra/appsody-hello-world/}"
 ### Tekton Example ###
 
 # Create deploy target Project Namespace #
-oc new-project appsody-project || true
+# oc new-project appsody-project || true
 
 # Add Namespace to Service Mesh #
-oc label namespace appsody-project istio-injection=enabled --overwrite
+# oc label namespace appsody-project istio-injection=enabled --overwrite
 
 # Namespace #
 namespace=kabanero

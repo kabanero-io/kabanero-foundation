@@ -15,9 +15,9 @@ Retrieve the [installation scripts from our documentation repository](https://gi
 
 ## Installation
 
-As a `cluster-admin`, run
+As a `cluster-admin`, execute the installation script, replacing `my.openshift.master.default.subdomain` with your subdomain:
 ```
-openshift_master_default_subdomain=my.openshift.master.default.subdomain ./install-kabanero-foundation.sh
+openshift_master_default_subdomain=<my.openshift.master.default.subdomain> ./install-kabanero-foundation.sh
 ```
 
 ## Sample Appsody project with manual Tekton pipeline run

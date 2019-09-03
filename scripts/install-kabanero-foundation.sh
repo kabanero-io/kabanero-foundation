@@ -79,13 +79,13 @@ done
 release=v0.1.1
 
 # Webhook Extension #
-curl -L https://github.com/tektoncd/dashboard/releases/download/${release}/webhooks-extension_release.yaml \
+curl -L https://github.com/tektoncd/dashboard/releases/download/${release}/openshift-webhooks-extension.yaml \
   | sed 's/namespace: tekton-pipelines/namespace: kabanero/' \
   | sed 's/value: tekton-pipelines/value: kabanero/' \
   | oc apply --filename -
 
 # Dashboard #
-curl -L https://github.com/tektoncd/dashboard/releases/download/${release}/release.yaml \
+curl -L https://github.com/tektoncd/dashboard/releases/download/${release}/openshift-tekton-dashboard.yaml \
   | sed 's/namespace: tekton-pipelines/namespace: kabanero/' \
   | sed 's/default: tekton-pipelines/default: kabanero/' \
   | oc apply --filename -
@@ -105,22 +105,6 @@ oc scale -n kabanero deploy tekton-dashboard --replicas=1
 
 # Kserving Configuration #
 oc patch configmap config-domain --namespace knative-serving --type='json' --patch '[{"op": "add", "path": "/data/'"${openshift_master_default_subdomain}"'", "value": ""}]'
-
-
-### Routes ###
-
-# Expose tekton dashboard with a Route #
-until oc get -n kabanero svc tekton-dashboard
-do
-  sleep 1
-done
-
-oc delete route -n kabanero tekton-dashboard || true
-oc expose service tekton-dashboard \
-  -n kabanero \
-  --name "tekton-dashboard" \
-  --port="http" \
-  --hostname=tekton-dashboard.${openshift_master_default_subdomain}
 
 
 # Wait for tekton CRDs #

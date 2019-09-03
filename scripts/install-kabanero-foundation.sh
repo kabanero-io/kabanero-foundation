@@ -48,7 +48,14 @@ rm -Rf istio-$ISTIO_VERSION
 
 namespace=kabanero
 oc new-project ${namespace} || true
-oc apply -f https://github.com/kabanero-io/kabanero-operator/releases/download/${KABANERO_BRANCH}/kabanero-operators.yaml
+
+
+# Install & re-run if there is a CRD/CR timing issue
+# https://github.com/kabanero-io/kabanero-operator/issues/141
+until oc apply -f https://github.com/kabanero-io/kabanero-operator/releases/download/${KABANERO_BRANCH}/kabanero-operators.yaml
+do
+  sleep 5
+done
 
 # Grant kabanero SA cluster-admin in order to create Appsody SA cluster-admin from the Collection
 oc adm policy add-cluster-role-to-user cluster-admin -z kabanero-operator -n ${namespace}

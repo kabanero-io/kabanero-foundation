@@ -7,7 +7,7 @@ set -Eeox pipefail
 
 
 # Branch/Release of Kabanero #
-KABANERO_BRANCH="${KABANERO_BRANCH:-0.1.0}"
+KABANERO_BRANCH="${KABANERO_BRANCH:-0.1.1}"
 
 # Kserving domain matches openshift_master_default_subdomain #
 # openshift_master_default_subdomain="${openshift_master_default_subdomain:-my.openshift.master.default.subdomain}"

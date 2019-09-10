@@ -46,12 +46,12 @@ Access application at `http://appsody-hello-world.appsody-project.my.openshift.m
 
 ## Sample Appsody project with webhook driven Tekton pipeline run
 
-Use the appsody to create a sample project
+Use appsody to create a sample project
 
-Download [appsody](https://github.com/appsody/appsody/releases)
-Add the kabanero collection repository to appsody `appsody repo add kabanero https://github.com/kabanero-io/collections/releases/download/v0.1.2/kabanero-index.yaml`
-Initialize a java microprofile project `appsody init kabanero/java-microprofile
-Push to the project to your github repository
+1. Download [appsody](https://github.com/appsody/appsody/releases)
+2. Add the kabanero collection repository to appsody `appsody repo add kabanero https://github.com/kabanero-io/collections/releases/download/v0.1.2/kabanero-index.yaml`
+3. Initialize a java microprofile project `appsody init kabanero/java-microprofile
+4. Push to the project to your github repository
 
 Create a Persistent Volume for the tekton pipeline to use. A sample hostPath `pv.yaml` is provided.
 ```
@@ -89,29 +89,3 @@ Make a simple change to the application repository, such as updating the README.
 
 In the Tekton dashboard, you should observe a new PipelineRun execute as a result of the commit and webhook.
 
-
-
-
-------------------------
-Create the pipeline and execute the example manual pipeline run.  
-The Github user token must have the authority to access the repository and create a webhook.  
-```
-openshift_master_default_subdomain="my.openshift.master.default.subdomain" \
-GITHUB_REPO="https://github.com/dacleyra/appsody-hello-world" \
-GITHUB_USERNAME="githubuser" \
-GITHUB_TOKEN="githubtoken" \
-./appsody-tekton-example-webhook-run.sh
-```
-
-Following the creation of the webhook by the script, a commit to the repository will result in a pipeline execution.
-
-By default, the application container image will be built and pushed to the Openshift Internal Registry, and then deployed as a Knative Service.
-
-View manual pipeline logs
-```
-oc logs $(oc get pods -l tekton.dev/pipeline=appsody-build-pipeline --output=jsonpath={.items[0].metadata.name}) --all-containers
-```
-
-Access Tekton dashboard at `http://tekton-dashboard.my.openshift.master.default.subdomain`
-
-Access application at `http://appsody-hello-world.appsody-project.my.openshift.master.default.subdomain`

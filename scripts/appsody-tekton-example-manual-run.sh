@@ -22,36 +22,38 @@ APP_REPO="${APP_REPO:-https://github.com/dacleyra/appsody-hello-world/}"
 namespace=kabanero
 
 # Grant SecurityContext to appsody-sa. Example PV uses hostPath
-oc -n ${namespace} create sa appsody-sa || true
-oc adm policy add-cluster-role-to-user cluster-admin -z appsody-sa -n ${namespace}
-oc adm policy add-scc-to-user hostmount-anyuid -z appsody-sa -n ${namespace}
+oc -n ${namespace} get sa appsody-sa ||
+{
+  oc -n ${namespace} create sa appsody-sa || true
+  oc adm policy add-cluster-role-to-user cluster-admin -z appsody-sa -n ${namespace}
+  oc adm policy add-scc-to-user hostmount-anyuid -z appsody-sa -n ${namespace}
 
-sleep 120
+  sleep 120
 
-# Workaround https://github.com/tektoncd/pipeline/issues/1103
-# Restart pipeline operator to avoid issue
-oc scale -n ${namespace} deploy openshift-pipelines-operator --replicas=0
-sleep 5
-oc scale -n ${namespace} deploy openshift-pipelines-operator --replicas=1
-readyReplicas=0
-until [ "$readyReplicas" -ge 1 ]; do
-  readyReplicas=$(oc get -n kabanero deploy openshift-pipelines-operator -o template --template={{.status.readyReplicas}})
-  sleep 1
-done
+  # Workaround https://github.com/tektoncd/pipeline/issues/1103
+  # Restart pipeline operator to avoid issue
+  oc scale -n ${namespace} deploy openshift-pipelines-operator --replicas=0
+  sleep 5
+  oc scale -n ${namespace} deploy openshift-pipelines-operator --replicas=1
+  readyReplicas=0
+  until [ "$readyReplicas" -ge 1 ]; do
+    readyReplicas=$(oc get -n kabanero deploy openshift-pipelines-operator -o template --template={{.status.readyReplicas}})
+    sleep 1
+  done
 
-# Workaround https://github.com/tektoncd/pipeline/issues/1103
-# Restart pipeline controller to avoid issue
-oc scale -n openshift-pipelines deploy tekton-pipelines-controller --replicas=0
-sleep 5
-oc scale -n openshift-pipelines deploy tekton-pipelines-controller --replicas=1
-readyReplicas=0
-until [ "$readyReplicas" -ge 1 ]; do
-  readyReplicas=$(oc get -n openshift-pipelines deploy tekton-pipelines-controller -o template --template={{.status.readyReplicas}})
-  sleep 1
-done
+  # Workaround https://github.com/tektoncd/pipeline/issues/1103
+  # Restart pipeline controller to avoid issue
+  oc scale -n openshift-pipelines deploy tekton-pipelines-controller --replicas=0
+  sleep 5
+  oc scale -n openshift-pipelines deploy tekton-pipelines-controller --replicas=1
+  readyReplicas=0
+  until [ "$readyReplicas" -ge 1 ]; do
+    readyReplicas=$(oc get -n openshift-pipelines deploy tekton-pipelines-controller -o template --template={{.status.readyReplicas}})
+    sleep 1
+  done
 
-sleep 120
-
+  sleep 120
+}
 
 # Pipeline Resources: Source repo and destination container image
 oc -n ${namespace} delete pipelineresource docker-image git-source || true

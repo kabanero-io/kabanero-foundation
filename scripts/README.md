@@ -15,9 +15,9 @@ Retrieve the [installation scripts from our documentation repository](https://gi
 
 ## Installation
 
-As a `cluster-admin`, run
+As a `cluster-admin`, execute the installation script, replacing `my.openshift.master.default.subdomain` with your subdomain:
 ```
-openshift_master_default_subdomain=my.openshift.master.default.subdomain ./install-kabanero-foundation.sh
+openshift_master_default_subdomain=<my.openshift.master.default.subdomain> ./install-kabanero-foundation.sh
 ```
 
 ## Sample Appsody project with manual Tekton pipeline run
@@ -46,11 +46,53 @@ Access application at `http://appsody-hello-world.appsody-project.my.openshift.m
 
 ## Sample Appsody project with webhook driven Tekton pipeline run
 
-Create a Persistent Volume for the pipeline to use. A sample hostPath `pv.yaml` is provided.
+Use the appsody to create a sample project
+
+Download [appsody](https://github.com/appsody/appsody/releases)
+Add the kabanero collection repository to appsody `appsody repo add kabanero https://github.com/kabanero-io/collections/releases/download/v0.1.2/kabanero-index.yaml`
+Initialize a java microprofile project `appsody init kabanero/java-microprofile
+Push to the project to your github repository
+
+Create a Persistent Volume for the tekton pipeline to use. A sample hostPath `pv.yaml` is provided.
 ```
 oc apply -f pv.yaml
 ```
 
+Create a priveleged service account to run the pipeline
+```
+oc -n kabanero create sa appsody-sa
+oc adm policy add-cluster-role-to-user cluster-admin -z appsody-sa -n kabanero
+oc adm policy add-scc-to-user hostmount-anyuid -z appsody-sa -n kabanero
+```
+
+Login to the Tekton dashboard using openshift credentials `http://tekton-dashboard.my.openshift.master.default.subdomain`
+
+If your github repository is private, create a secret with your github credentials. Associate the secret with the service account that the pipeline will run as. 
+
+![](secret.png)
+
+Create a webhook using the dashboard, providing the necessary information. Provide the access token for creating a webhook.
+
+![](webhook.png)
+
+![](cats.png)
+
+Once the webhook is created, it should generate a webhook in github. Verify the webhook is created by accessing.
+
+https://github.com/YOURORG/appsody-hello-world/settings/hooks/
+
+If the webhook payload was not successfully delivered, this may be due to a timeout of the webhook sink not starting in a timely manner. If so, select the failed webhook delivery in github, and redeliver it.
+
+Trigger the pipeline.
+
+Make a simple change to the application repository, such as updating the README.
+
+In the Tekton dashboard, you should observe a new PipelineRun execute as a result of the commit and webhook.
+
+
+
+
+------------------------
 Create the pipeline and execute the example manual pipeline run.  
 The Github user token must have the authority to access the repository and create a webhook.  
 ```

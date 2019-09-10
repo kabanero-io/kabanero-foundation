@@ -50,8 +50,8 @@ Use appsody to create a sample project
 
 1. Download [appsody](https://github.com/appsody/appsody/releases)
 2. Add the kabanero collection repository to appsody `appsody repo add kabanero https://github.com/kabanero-io/collections/releases/download/v0.1.2/kabanero-index.yaml`
-3. Initialize a java microprofile project `appsody init kabanero/java-microprofile
-4. Push to the project to your github repository
+3. Initialize a java microprofile project `appsody init kabanero/java-microprofile`
+4. Push the project to your github repository
 
 Create a Persistent Volume for the tekton pipeline to use. A sample hostPath `pv.yaml` is provided.
 ```
@@ -77,7 +77,7 @@ Create a webhook using the dashboard, providing the necessary information. Provi
 
 ![](cats.png)
 
-Once the webhook is created, it should generate a webhook in github. Verify the webhook is created by accessing.
+Once the webhook is created, the dashboard generates a webhook in github. Verify the webhook is created by accessing.
 
 https://github.com/YOURORG/appsody-hello-world/settings/hooks/
 

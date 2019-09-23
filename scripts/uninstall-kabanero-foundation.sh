@@ -88,6 +88,25 @@ fi
 
 # Delete the knative-sources objects if the CRD is still present
 if [ `oc get crds githubsources.sources.eventing.knative.dev --no-headers --ignore-not-found | wc -l` -gt 0 ] ; then
+    # Delete any "Kind: GitHubSource" objects in this cluster.  Print a list of
+    # each instance along with its namespace.  Then delete them one by one.
+    oc get githubsources --all-namespaces -o=custom-columns=NAME:.metadata.name,NAMESPACE:.metadata.namespace --no-headers --ignore-not-found | while read GHS_NAME GHS_NAMESPACE; do oc delete githubsource $GHS_NAME --namespace $GHS_NAMESPACE; done
+
+    # Wait for all of the GitHubSource instances to be deleted.  We don't
+    # want to delete the GitHubSource instance until the
+    # github-source-controller has had a chance to process its finalizer.
+    echo "Waiting for GitHubSource instances to be deleted...."
+    LOOP_COUNT=0
+    while [ `oc get githubsources --all-namespaces | wc -l` -gt 0 ]
+    do
+        sleep 5
+        LOOP_COUNT=`expr $LOOP_COUNT + 1`
+        if [ $LOOP_COUNT -gt 10 ] ; then
+            echo "Timed out waiting for GitHubSource instances to be deleted"
+            exit 1
+        fi
+    done
+
     oc delete statefulset controller-manager --namespace $KABANERO_OPERATOR_NAMESPACE --ignore-not-found
     oc delete service controller --namespace $KABANERO_OPERATOR_NAMESPACE --ignore-not-found
     oc delete clusterrolebinding eventing-sources-controller --ignore-not-found

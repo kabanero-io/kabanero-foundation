@@ -4,10 +4,52 @@
 # Also echo each command as it's executed.
 set -Eeox pipefail
 
+# By default, this script will remove all instances of AppsodyApplication
+# from the cluster, and delete the CRD.  To prevent this, comment the
+# following line.
+APPSODY_UNINSTALL=1
+
+# The namespace where the kabanero instance is installed.  This should be
+# changed to the correct namespace if a different namespaces was used on
+# the install.
 KABANERO_OPERATOR_NAMESPACE=kabanero
+
+# Various versions and names required by the script.
 TEKTON_DASHBOARD_RELEASE=v0.1.1
 ISTIO_ARCH=linux
 ISTIO_VERSION=1.1.7
+
+# If we're completely removing Appsody, make sure all instances of the
+# Appsody application CRD are deleted.  This gives the Appsody operator
+# a chance to process any finalizers which may be set, before the operator
+# is removed (by removing the Kabanero instance, later).
+if [ "$APPSODY_UNINSTALL" -eq 1 ] ; then
+
+    # Make sure the Appsody CRD still exists...
+    if [ `oc get crds appsodyapplications.appsody.dev --no-headers --ignore-not-found | wc -l` -gt 0 ] ; then
+
+        # Delete any "Kind: AppsodyApplication" objects in this cluster.  Print
+        # a list of each instance along with its namespace.  Then delete them 
+        # one by one.
+        oc get AppsodyApplication --all-namespaces -o=custom-columns=NAME:.metadata.name,NAMESPACE:.metadata.namespace --no-headers --ignore-not-found | while read APP_NAME APP_NAMESPACE; do oc delete AppsodyApplication $APP_NAME --namespace $APP_NAMESPACE; done
+
+        # Wait for all of the application instances to be deleted.  We don't 
+        # want to delete the Appsody operator until the operator has had a
+        # chance to process its finalizer.
+        echo "Waiting for AppsodyApplication instances to be deleted...."
+        LOOP_COUNT=0
+        while [ `oc get AppsodyApplication --all-namespaces | wc -l` -gt 0 ]
+        do
+            sleep 5
+            LOOP_COUNT=`expr $LOOP_COUNT + 1`
+            if [ $LOOP_COUNT -gt 10 ] ; then
+                echo "Timed out waiting for AppsodyApplication instances to be deleted"
+                exit 1
+            fi
+        done
+    fi
+fi
+
 
 # Clean up Kabanero instances and the Kabanero operator if the Kabanero
 # CRDs still exist
@@ -44,6 +86,11 @@ if [ `oc get crds kabaneros.kabanero.io --no-headers --ignore-not-found | wc -l`
     oc delete crd collections.kabanero.io
 fi
 
+# If we're removing Appsody, go ahead and remove the CRD now.
+if [ "$APPSODY_UNINSTALL" -eq 1 ] ; then
+    oc delete crd appsodyapplications.appsody.dev --ignore-not-found
+fi
+
 # Delete the Tekton dashboard and webhook extension, if they were
 # installed.  Use "|| true" here to force the script to continue if these
 # steps fail, because the pipeline and task CRDs may no longer be installed.
@@ -56,6 +103,8 @@ curl -L https://github.com/tektoncd/dashboard/releases/download/${TEKTON_DASHBOA
     | sed "s/namespace: tekton-pipelines/namespace: $KABANERO_OPERATOR_NAMESPACE/" \
     | sed "s/value: tekton-pipelines/value: $KABANERO_OPERATOR_NAMESPACE/" \
     | oc delete --ignore-not-found --filename - || true
+
+oc delete configmap githubwebhook --namespace $KABANERO_OPERATOR_NAMESPACE --ignore-not-found
 
 # Delete the Tekton config object.  This should trigger the Tekton operator
 # to deregister its CRDs and remove its objects.  This is a cluster scoped

@@ -40,7 +40,7 @@ The following [table](prereq-details.md) illustrates the default container resou
 
 # appsody Application Requirements
 
-## appsody Hardware Capactiy
+## appsody Hardware Capacity
 
 appsody currently includes 5 different stacks:
   - java-microprofile (249 MB)

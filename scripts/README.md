@@ -11,7 +11,7 @@
 
 ## Installation Scripts
 
-Retrieve the [installation scripts from our documentation repository](https://github.com/kabanero-io/docs/tree/master/ref/scripts)
+Retrieve the [installation scripts from our documentation repository](https://github.com/kabanero-io/kabanero-foundation/tree/master/scripts)
 
 ## Installation
 
@@ -88,4 +88,17 @@ Trigger the pipeline.
 Make a simple change to the application repository, such as updating the README.
 
 In the Tekton dashboard, you should observe a new PipelineRun execute as a result of the commit and webhook.
+
+## Uninstallation Scripts
+
+A sample uninstall script is provided.  The script will perform the reverse of the install script.  Before running the uninstall script, consider removing any resources created outside of the install script (for example, webhooks, Knative services or Appsody applications).  Retrieve the [uninstallation scripts from our documentation repository](https://github.com/kabanero-io/kabanero-foundation/tree/master/scripts)
+
+The sample uninstall script will completely remove all dependencies from the cluster, including Knative, Tekton and Istio.  The script can be modified if a different behavior is required.
+
+## Uninstallation
+
+As a `cluster-admin`, execute the sample uninstallation script:
+```
+./uninstall-kabanero-foundation.sh
+```
 

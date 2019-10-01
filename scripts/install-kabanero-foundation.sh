@@ -60,8 +60,14 @@ done
 # Grant kabanero SA cluster-admin in order to create Appsody SA cluster-admin from the Collection
 oc adm policy add-cluster-role-to-user cluster-admin -z kabanero-operator -n ${namespace}
 
-# Create instance, and apply default collections
-oc apply -n ${namespace} -f https://raw.githubusercontent.com/kabanero-io/kabanero-operator/${KABANERO_BRANCH}/config/samples/full.yaml
+# Create instance, and apply default collections.  Early releases did not
+# have default.yaml, so use full.yaml if it does not exist.
+GITHUB_RAW_URL=https://raw.githubusercontent.com/kabanero-io/kabanero-operator/${KABANERO_BRANCH}/config/samples
+if curl --output /dev/null --silent --head --fail "${GITHUB_RAW_URL}/default.yaml"; then
+    oc apply -n ${namespace} -f "${GITHUB_RAW_URL}/default.yaml"
+else
+    oc apply -n ${namespace} -f "${GITHUB_RAW_URL}/full.yaml"
+fi
 
 
 # Need to check KNative Serving CRD is available before proceeding #

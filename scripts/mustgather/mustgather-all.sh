@@ -4,7 +4,7 @@
 
 set -Euox pipefail
 
-LOGS_DIR=kabanero-debug
+LOGS_DIR="${LOGS_DIR:-kabanero-debug}"
 
 rm -Rf ${LOGS_DIR}
 

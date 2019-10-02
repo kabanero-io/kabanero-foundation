@@ -8,11 +8,11 @@ set -Euox pipefail
 # operator.  That's the component we're searching for currently.
 COMPONENT="kappnavs.charts.helm.k8s.io"
 BIN=oc
-LOGS_DIR=kabanero-debug
+LOGS_DIR="${LOGS_DIR:-kappnav-debug}"
 
 # Describe and Get all api resources of component across cluster
 
-APIRESOURCES=$(${BIN} get crds -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | grep ${COMPONENT})
+APIRESOURCES=$(${BIN} get crds -o jsonpath='{range .items[*]}{@.metadata.namespace}{"\n"}{end}' | uniq)
 
 for APIRESOURCE in ${APIRESOURCES[@]}
 do

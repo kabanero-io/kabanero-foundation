@@ -6,7 +6,7 @@ set -Euox pipefail
 
 COMPONENT="istio.io"
 BIN=oc
-LOGS_DIR=kabanero-debug
+LOGS_DIR="${LOGS_DIR:-kabanero-debug}"
 
 # Describe and Get all api resources of component across cluster
 
@@ -14,7 +14,7 @@ APIRESOURCES=$(${BIN} get crds -o jsonpath="{.items[*].metadata.name}" | tr ' ' 
 
 for APIRESOURCE in ${APIRESOURCES[@]}
 do
-	NAMESPACES=$(${BIN} get ${APIRESOURCE} --all-namespaces=true -o jsonpath="{.items[*].metadata.namespace}")
+	NAMESPACES=$(${BIN} get ${APIRESOURCE} --all-namespaces=true -o jsonpath='{range .items[*]}{@.metadata.namespace}{"\n"}{end}' | uniq)
 	for NAMESPACE in ${NAMESPACES[@]}
 	do
 		mkdir -p ${LOGS_DIR}/${NAMESPACE}/${APIRESOURCE}
@@ -37,7 +37,7 @@ do
 	do
 		${BIN} logs --all-containers=true -n ${NAMESPACE} ${POD} > ${LOGS_DIR}/${NAMESPACE}/pods/${POD}.log
 	done
-	
+
 	for APIRESOURCE in ${APIRESOURCES[@]}
 	do
 		mkdir -p ${LOGS_DIR}/${NAMESPACE}/${APIRESOURCE}

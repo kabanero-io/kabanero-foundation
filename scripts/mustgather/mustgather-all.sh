@@ -13,6 +13,7 @@ rm -Rf ${LOGS_DIR}
 ./kabanero-mustgather.sh
 ./knative-mustgather.sh
 ./tekton-mustgather.sh
+./che-mustgather.sh
 LOGS_DIR=$LOGS_DIR ./kappnav-mustgather.sh
 
 tar -zcf ${LOGS_DIR}.tar.gz ${LOGS_DIR}

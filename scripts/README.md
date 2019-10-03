@@ -2,12 +2,31 @@
 
 ## Prerequisites
 
-* openshift_master_default_subdomain is configured
+* openshift_master_default_subdomain is configured in your Openshift Ansible inventory file
   * See more about [Configuring Your Inventory File](https://docs.okd.io/3.11/install/configuring_inventory_file.html)
+  * Example Openshift Ansible inventory file configuration:
+ ```
+ [OSEv3:vars]
+ openshift_master_default_subdomain=<my.openshift.master.default.subdomain>
+ ```
+  
 * Wildcard DNS is available for your subdomain
+  * See more about [Wildcard DNS](https://docs.openshift.com/container-platform/3.11/install/prerequisites.html#wildcard-dns-prereq)
   * alternatively, nip.io can be used
-* The Internal Registry is configured
+  
+* The Internal Registry is configured in your Openshift Ansible inventory file
   * See more about the [Internal Registry](https://docs.okd.io/3.11/install_config/registry/index.html)
+  * Example Openshift Ansible inventory file configuration:
+```
+[OSEv3:vars]
+openshift_hosted_registry_storage_kind=nfs
+openshift_hosted_registry_storage_access_modes=['ReadWriteMany']
+openshift_hosted_registry_storage_nfs_directory=/exports
+openshift_hosted_registry_storage_nfs_options='*(rw,root_squash)'
+openshift_hosted_registry_storage_volume_name=registry
+openshift_hosted_registry_storage_volume_size=10Gi
+openshift_hosted_registry_storage_host=n.n.n.n
+```
 
 ## Installation Scripts
 

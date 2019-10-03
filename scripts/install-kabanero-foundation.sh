@@ -17,6 +17,12 @@ then
   read openshift_master_default_subdomain
 fi
 
+# Query for optional components
+if [ -z "$enable_kappnav" ]
+then
+  echo "Would you like to configure KAppNav (yes/no)?"
+  read enable_kappnav
+fi
 
 ### Istio ###
 
@@ -126,3 +132,9 @@ do
   sleep 5
 done
 
+# Install KAppNav if selected
+if [ "$enable_kappnav" == "yes" ]
+then
+  # TODO: On the next release of kabanero-operator, fix this URL to use release notation
+  oc apply -f https://raw.githubusercontent.com/kabanero-io/kabanero-operator/master/deploy/optional.yaml --selector=kabanero.io/component=kappnav
+fi

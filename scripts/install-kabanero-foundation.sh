@@ -9,6 +9,9 @@ set -Eeox pipefail
 # Branch/Release of Kabanero #
 KABANERO_BRANCH="${KABANERO_BRANCH:-0.2.0-rc.1}"
 
+# Optional components (yes/no)
+ENABLE_KAPPNAV="${ENABLE_KAPPNAV:-no}"
+
 # Kserving domain matches openshift_master_default_subdomain #
 # openshift_master_default_subdomain="${openshift_master_default_subdomain:-my.openshift.master.default.subdomain}"
 if [ -z "$openshift_master_default_subdomain" ]
@@ -17,12 +20,6 @@ then
   read openshift_master_default_subdomain
 fi
 
-# Query for optional components
-if [ -z "$enable_kappnav" ]
-then
-  echo "Would you like to configure KAppNav (yes/no)?"
-  read enable_kappnav
-fi
 
 ### Istio ###
 
@@ -133,7 +130,7 @@ do
 done
 
 # Install KAppNav if selected
-if [ "$enable_kappnav" == "yes" ]
+if [ "$ENABLE_KAPPNAV" == "yes" ]
 then
   oc apply -f https://raw.githubusercontent.com/kabanero-io/kabanero-operator/${KABANERO_BRANCH}/deploy/optional.yaml --selector=kabanero.io/component=kappnav
 fi

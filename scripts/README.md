@@ -15,6 +15,8 @@ Retrieve the [installation scripts from our documentation repository](https://gi
 
 ## Installation
 
+Review the installation script for any optional components that you wish to enable.  Components can be enabled by passing the appropriate environment variable to the script, or by editing the script.
+
 As a `cluster-admin`, execute the installation script, replacing `my.openshift.master.default.subdomain` with your subdomain:
 ```
 openshift_master_default_subdomain=<my.openshift.master.default.subdomain> ./install-kabanero-foundation.sh

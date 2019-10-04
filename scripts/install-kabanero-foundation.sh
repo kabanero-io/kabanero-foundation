@@ -7,7 +7,7 @@ set -Eeox pipefail
 
 
 # Branch/Release of Kabanero #
-KABANERO_BRANCH="${KABANERO_BRANCH:-0.1.2}"
+KABANERO_BRANCH="${KABANERO_BRANCH:-0.2.0-rc.1}"
 
 # Kserving domain matches openshift_master_default_subdomain #
 # openshift_master_default_subdomain="${openshift_master_default_subdomain:-my.openshift.master.default.subdomain}"
@@ -135,6 +135,5 @@ done
 # Install KAppNav if selected
 if [ "$enable_kappnav" == "yes" ]
 then
-  # TODO: On the next release of kabanero-operator, fix this URL to use release notation
-  oc apply -f https://raw.githubusercontent.com/kabanero-io/kabanero-operator/master/deploy/optional.yaml --selector=kabanero.io/component=kappnav
+  oc apply -f https://raw.githubusercontent.com/kabanero-io/kabanero-operator/${KABANERO_BRANCH}/deploy/optional.yaml --selector=kabanero.io/component=kappnav
 fi

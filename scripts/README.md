@@ -62,7 +62,7 @@ oc logs $(oc get pods -l tekton.dev/pipelineRun=appsody-manual-pipeline-run --ou
 
 Access Tekton dashboard at `http://tekton-dashboard.my.openshift.master.default.subdomain`
 
-Access application at `http://appsody-hello-world.appsody-project.my.openshift.master.default.subdomain`
+Access application at `http://appsody-hello-world.kabanero.my.openshift.master.default.subdomain`
 
 
 ## Sample Appsody project with webhook driven Tekton pipeline run

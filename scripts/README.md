@@ -30,7 +30,7 @@ openshift_hosted_registry_storage_host=n.n.n.n
 
 ## Installation
 
-View [installing kabanero foundation](https://kabanero.io/docs/ref/general/installing-kabanero-foundation.html) on Kabanero.io
+View [Installing Kabanero Foundation](https://kabanero.io/docs/ref/general/installing-kabanero-foundation.html) on Kabanero.io
 
 ## Sample Appsody project with manual Tekton pipeline run
 

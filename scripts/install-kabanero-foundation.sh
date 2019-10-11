@@ -135,5 +135,7 @@ fi
 
 set +x
 echo "The installation script is complete.  You can now create an instance"
-echo "of the Kabanero CR.  To create the default instance:"
+echo "of the Kabanero CR.  If you have cloned and curated a collection set,"
+echo "apply the Kabanero CR that you created.  Or, to create the default "
+echo "instance:"
 echo "oc apply -n ${namespace} -f ${SAMPLE_KAB_INSTANCE}"

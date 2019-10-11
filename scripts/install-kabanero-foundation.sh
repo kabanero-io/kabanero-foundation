@@ -136,4 +136,4 @@ fi
 set +x
 echo "The installation script is complete.  You can now create an instance"
 echo "of the Kabanero CR.  To create the default instance:"
-echo "oc apply -f ${SAMPLE_KAB_INSTANCE}"
+echo "oc apply -n ${namespace} -f ${SAMPLE_KAB_INSTANCE}"

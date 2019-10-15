@@ -9,6 +9,10 @@ set -Eeox pipefail
 # Branch/Release of Kabanero #
 KABANERO_BRANCH="${KABANERO_BRANCH:-0.2.0-rc.1}"
 
+# Over-ride sleep times if necessary for automation
+SLEEP_LONG="${SLEEP_LONG:-5}"
+SLEEP_SHORT="${SLEEP_SHORT:-1}"
+
 # Optional components (yes/no)
 ENABLE_KAPPNAV="${ENABLE_KAPPNAV:-no}"
 
@@ -57,7 +61,7 @@ oc new-project ${namespace} || true
 # https://github.com/kabanero-io/kabanero-operator/issues/141
 until oc apply -f https://github.com/kabanero-io/kabanero-operator/releases/download/${KABANERO_BRANCH}/kabanero-operators.yaml
 do
-  sleep 5
+  sleep $SLEEP_LONG
 done
 
 # Grant kabanero SA cluster-admin in order to create Appsody SA cluster-admin from the Collection
@@ -66,7 +70,7 @@ oc adm policy add-cluster-role-to-user cluster-admin -z kabanero-operator -n ${n
 # Need to check KNative Serving CRD is available before proceeding #
 until oc get crd services.serving.knative.dev 
 do
-  sleep 1
+  sleep $SLEEP_SHORT
 done
 
 
@@ -79,7 +83,7 @@ done
 # Wait for tekton CRDs #
 until oc get crd clustertasks.tekton.dev config.operator.tekton.dev pipelineresources.tekton.dev pipelineruns.tekton.dev pipelines.tekton.dev taskruns.tekton.dev tasks.tekton.dev
 do
-  sleep 5
+  sleep $SLEEP_LONG
 done
 
 release=v0.1.1
@@ -101,7 +105,7 @@ curl -L https://github.com/tektoncd/dashboard/releases/download/${release}/opens
 # https://github.com/tektoncd/dashboard/issues/364
 until oc get clusterrole tekton-dashboard-minimal
 do
-  sleep 1
+  sleep $SLEEP_SHORT
 done
 oc patch clusterrole tekton-dashboard-minimal --type json -p='[{"op":"add","path":"/rules/-","value":{"apiGroups":["security.openshift.io"],"resources":["securitycontextconstraints"],"verbs":["use"]}}]'
 oc scale -n kabanero deploy tekton-dashboard --replicas=0
@@ -116,7 +120,7 @@ oc patch configmap config-domain --namespace knative-serving --type='json' --pat
 # Wait for tekton CRDs #
 until oc get crd extensions.dashboard.tekton.dev
 do
-  sleep 5
+  sleep $SLEEP_LONG
 done
 
 # Install KAppNav if selected

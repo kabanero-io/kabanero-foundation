@@ -70,7 +70,7 @@ oc adm policy add-cluster-role-to-user cluster-admin -z kabanero-operator -n ${n
 # Need to check KNative Serving CRD is available before proceeding #
 until oc get crd services.serving.knative.dev 
 do
-  sleep $SlEEP_SHORT
+  sleep $SLEEP_SHORT
 done
 
 

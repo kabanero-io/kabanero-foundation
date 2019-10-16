@@ -32,6 +32,22 @@ openshift_hosted_registry_storage_host=n.n.n.n
 
 View [Installing Kabanero Foundation](https://kabanero.io/docs/ref/general/installing-kabanero-foundation.html) on Kabanero.io
 
+## Upgrade
+
+To upgrade from release to release, use the `upgrade-kabanero-foundation.sh`
+script.  Set environment variable KABANERO_BRANCH to be the release that you
+want to upgrade to.  If you obtained the `kabanero-foundation` repository from
+a tagged release, this variable will default to the correct value.  The
+script will update the Kabanero operator to the desired release.  For example:
+```
+KABANERO_BRANCH=0.2.0-rc.1 ./upgrade-kabanero-foundation.sh
+```
+After the script completes successfully, you should update your Kabanero CR
+instances to use the new version.  If you are using the default collection set,
+consider updating it to the new version as well.  For an example, see
+[default.yaml](https://raw.githubusercontent.com/kabanero-io/kabanero-operator/master/config/samples/default.yaml), which sets the version, and uses the
+default collection set.
+
 ## Sample Appsody project with manual Tekton pipeline run
 
 Create a Persistent Volume for the pipeline to use. A sample hostPath `pv.yaml` is provided.

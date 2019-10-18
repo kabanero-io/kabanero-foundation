@@ -7,7 +7,7 @@ set -Eeox pipefail
 
 
 # Branch/Release of Kabanero #
-KABANERO_BRANCH="${KABANERO_BRANCH:-0.2.0-rc.1}"
+KABANERO_BRANCH="${KABANERO_BRANCH:-0.2.0}"
 
 # Over-ride sleep times if necessary for automation
 SLEEP_LONG="${SLEEP_LONG:-5}"

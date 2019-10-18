@@ -3,7 +3,7 @@
 set -Eeox pipefail
 
 # Branch/Release of Kabanero #
-KABANERO_BRANCH="${KABANERO_BRANCH:-0.2.0-rc.1}"
+KABANERO_BRANCH="${KABANERO_BRANCH:-0.2.0}"
 namespace=kabanero
 
 # Make sure we can find the kabanero-operator deployment in the cluster
@@ -40,7 +40,7 @@ echo "  version: \"0.2.0\""
 echo "  collections: "
 echo "    repositories: "
 echo "    - name: central"
-echo "      url: https://github.com/kabanero-io/collections/releases/download/v0.2.0-rc1/kabanero-index.yaml"
+echo "      url: https://github.com/kabanero-io/collections/releases/download/0.2.0/kabanero-index.yaml"
 echo "      activateDefaultCollections: true"
 echo ""
 echo "To list Kabanero CR instances in namespace ${namespace}, use:"

@@ -3,6 +3,9 @@
 
 set -Eeox pipefail
 
+SLEEP_LONG="${SLEEP_LONG:-5}"
+SLEEP_SHORT="${SLEEP_SHORT:-2}"
+
 # Args: subscription.yaml, subscription metadata.name, namespace
 subscribe () {
 	# Apply Subscription with Manual approval
@@ -12,13 +15,13 @@ subscribe () {
 	unset INSTALL_PLAN
 	until oc get subscription $2 -n $3 --output=jsonpath={.status.installPlanRef.name}
 	do
-		sleep 2
+		sleep $SLEEP_SHORT
 	done
 
 	# Get the InstallPlan
 	until [ -n "$INSTALL_PLAN" ]
 	do
-		sleep 2
+		sleep $SLEEP_SHORT
 		INSTALL_PLAN=$(oc get subscription $2 -n $3 --output=jsonpath={.status.installPlanRef.name})
 	done
 	
@@ -32,14 +35,14 @@ subscribe () {
 	until [ "$PHASE" == "Complete" ]
 	do
 		PHASE=$(oc get installplan $INSTALL_PLAN -n $3 --output=jsonpath={.status.phase})
-		sleep 2
+		sleep $SLEEP_SHORT
 	done
 	
 	unset PHASE
 	until [ "$PHASE" == "Succeeded" ]
 	do
 		PHASE=$(oc get clusterserviceversion $CSV -n $3 --output=jsonpath={.status.phase})
-		sleep 2
+		sleep $SLEEP_SHORT
 	done
 }
 
@@ -69,6 +72,7 @@ subscribe subscription-che.yaml eclipse-che kabanero
 oc apply -f https://github.com/knative/eventing-contrib/releases/download/v0.9.0/github.yaml
 
 # Tekton Dashboard
+oc new-project tekton-pipelines || true
 oc apply -f https://github.com/tektoncd/dashboard/releases/download/v0.2.0/openshift-webhooks-extension.yaml
 oc apply -f https://github.com/tektoncd/dashboard/releases/download/v0.2.0/openshift-tekton-dashboard.yaml
 

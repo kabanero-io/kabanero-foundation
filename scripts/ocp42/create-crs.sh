@@ -16,3 +16,4 @@ oc apply -f cr-knative-serving.yaml
 oc apply -f cr-kabanero.yaml
 
 # Eclipse Che instance
+oc apply -f cr-che.yaml

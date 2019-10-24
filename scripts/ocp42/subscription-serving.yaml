@@ -7,6 +7,6 @@ spec:
   channel: techpreview
   installPlanApproval: Manual
   name: serverless-operator
-  source: redhat-operators
+  source: kabanero-catalog
   sourceNamespace: openshift-marketplace
   startingCSV: serverless-operator.v1.1.0

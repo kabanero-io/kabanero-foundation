@@ -7,6 +7,6 @@ spec:
   channel: stable
   installPlanApproval: Manual
   name: eclipse-che
-  source: operatorhubio-catalog
+  source: community-operators
   sourceNamespace: openshift-marketplace
-  startingCSV: eclipse-che.v7.2.0
+  startingCSV: eclipse-che.v7.3.0

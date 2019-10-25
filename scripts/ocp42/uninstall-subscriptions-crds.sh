@@ -23,11 +23,7 @@ unsubscribe () {
 	
 }
 
-# Tekton Dashboard
-oc delete -f https://github.com/tektoncd/dashboard/releases/download/v0.2.0/openshift-tekton-dashboard.yaml
-oc delete -f https://github.com/tektoncd/dashboard/releases/download/v0.2.0/openshift-webhooks-extension.yaml
-
-unsubscribe kabanero-operator openshift-operators
+unsubscribe kabanero-operator kabanero
 
 unsubscribe serverless-operator openshift-operators
 
@@ -49,5 +45,11 @@ unsubscribe eclipse-che kabanero
 
 oc delete -f operatorgroup-kabanero.yaml
 
-# Github Sources
-oc delete -f https://github.com/knative/eventing-contrib/releases/download/v0.9.0/github.yaml
+oc delete -f catalogsource-kabanero.yaml
+
+# Cleanup from the openshift service mesh readme
+oc delete validatingwebhookconfiguration/openshift-operators.servicemesh-resources.maistra.io
+oc delete -n openshift-operators daemonset/istio-node
+oc delete clusterrole/istio-admin
+oc get crds -o name | grep '.*\.istio\.io' | xargs -r -n 1 oc delete
+oc get crds -o name | grep '.*\.maistra\.io' | xargs -r -n 1 oc delete

@@ -11,7 +11,7 @@ Install makes use of Operator Lifecycle Manager to subscribe to Kabanero operato
 
 `install-subscriptions-crds.sh`
 
-Until such time that Kabanero is published to an external catalog such as operatorhub.io, Kabanero can be built and deployed with an internal catalog via Subscription in the following manner.
+The Kabanero operator is installed using version 0.3.0-alpha.1.  If you would like to use a more recent version, the kabanero-operator project can be built and deployed with an internal catalog via Subscription in the following manner.
 ```
 export IMAGE=default-route-openshift-image-registry.apps.CLUSTER.example.com/kabanero/kabanero-operator:latest
 export REGISTRY_IMAGE=default-route-openshift-image-registry.apps.CLUSTER.example.com/openshift-marketplace/kabanero-operator-registry:latest

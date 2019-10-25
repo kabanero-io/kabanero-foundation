@@ -46,6 +46,8 @@ subscribe () {
 	done
 }
 
+oc apply -f catalogsource-kabanero.yaml
+
 subscribe subscription-elasticsearch.yaml elasticsearch-operator openshift-operators
 
 subscribe subscription-jaeger.yaml jaeger-product openshift-operators
@@ -68,11 +70,4 @@ subscribe subscription-kabanero.yaml kabanero-operator kabanero
 
 subscribe subscription-che.yaml eclipse-che kabanero
 
-# Github Sources
-oc apply -f https://github.com/knative/eventing-contrib/releases/download/v0.9.0/github.yaml
-
-# Tekton Dashboard
-oc new-project tekton-pipelines || true
-oc apply -f https://github.com/tektoncd/dashboard/releases/download/v0.2.0/openshift-webhooks-extension.yaml
-oc apply -f https://github.com/tektoncd/dashboard/releases/download/v0.2.0/openshift-tekton-dashboard.yaml
 

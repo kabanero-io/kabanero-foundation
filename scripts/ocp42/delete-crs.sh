@@ -3,7 +3,15 @@
 
 set -x pipefail
 
+# Tekton Dashboard
+oc delete -f https://github.com/tektoncd/dashboard/releases/download/v0.2.0/openshift-tekton-dashboard.yaml
+oc delete -f https://github.com/tektoncd/dashboard/releases/download/v0.2.0/openshift-webhooks-extension.yaml
+
+# Github Sources
+oc delete -f https://github.com/knative/eventing-contrib/releases/download/v0.9.0/github.yaml
+
 # Eclipse Che instance
+oc delete -f cr-che.yaml
 
 # Kabanero instance
 oc delete -f cr-kabanero.yaml

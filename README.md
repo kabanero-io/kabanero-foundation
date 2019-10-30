@@ -1,6 +1,6 @@
 # Kabanero Foundation
 
-The Kabanero Foundation Instance is a deployment of a set of Kabanero collection in a specific Kubernetes cluster.  The Kabanero operator is leveraged to install and operate the various curated infrastructure and artifacts as defined by each of the Kabanero collections. 
+The Kabanero Foundation Instance is a deployment of a set of Kabanero collections in a specific Kubernetes cluster.  The Kabanero operator is leveraged to install and operate the various curated infrastructure and artifacts as defined by each of the Kabanero collections. 
 
 
 ## Kabanero Foundation in a Kubernetes Cluster Prerequisites 

@@ -1,13 +1,23 @@
 # Kabanero Foundation
 
-The Kabanero Foundation Instance is a deployment of a Kabanero collection in a specific Kubernetes cluster.  The Kabanero operator is leveraged to install and operate the various curated infrastructure and artifacts as defined by the Kabanero collection.
+A Kabanero instance is a deployment of a set of Kabanero collections in a specific Kubernetes cluster.  The Kabanero operator is leveraged to install and operate the various curated infrastructure and artifacts as defined by each of the collections. 
+
 
 ## Kabanero Foundation in a Kubernetes Cluster Prerequisites 
 
+### Temporary move to OpenShift Container Platform (OCP)
+
+The Kabanero Open Project intends to build on open source distributions of Kubernetes; however, the current distribution of (OKD) "The Origin Community Distribution of Kubernetes" is lagging the commercial distributions.   We are trying to build leading-edge capabilities and look to leverage new features across the integrated open frameworks.  Therefore, at least for the short term, we have chosen to focus on building version 4 capabilities of the commercial distributions.  When the OKD Community more generally releases version 4 and are available, our community will return focus on OKD.
+
 ### Software Installation
 
+#### Release 0.3 pre-requisties
+
+ - [OCP] (https://www.openshift.com/products/container-platform)  V4.2.0+
+
+#### Release 0.1 and 0.2 pre-requisities
+
 - [OKD](https://www.okd.io/) v3.11.0+
-- [Operator Lifecycle Manager](https://github.com/operator-framework/operator-lifecycle-manager/releases) 0.10.0+ (Optional)
 
 
 ### Cluster Hardware Capacity

@@ -40,7 +40,7 @@ want to upgrade to.  If you obtained the `kabanero-foundation` repository from
 a tagged release, this variable will default to the correct value.  The
 script will update the Kabanero operator to the desired release.  For example:
 ```
-KABANERO_BRANCH=0.2.0 ./upgrade-kabanero-foundation.sh
+KABANERO_BRANCH=0.2.1 ./upgrade-kabanero-foundation.sh
 ```
 After the script completes successfully, you should update your Kabanero CR
 instances to use the new version.  If you are using the default collection set,

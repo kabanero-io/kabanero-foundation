@@ -18,7 +18,6 @@ The Kabanero Foundation Open Project intends to build on open source distributio
 #### Release 0.1 and 0.2 pre-requisities
 
 - [OKD](https://www.okd.io/) v3.11.0+
-- [Operator Lifecycle Manager](https://github.com/operator-framework/operator-lifecycle-manager/releases) 0.10.0+ (Optional)
 
 
 ### Cluster Hardware Capacity

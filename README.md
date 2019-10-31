@@ -23,13 +23,19 @@ The Kabanero Open Project intends to build on open source distributions of Kuber
 ### Cluster Hardware Capacity
 
 The full suite of Kabanero foundation components include: 
-  - Istio
+  - Istio (ServiceMesh)
   - Knative 
     - Eventing
     - Serving
   - Tekton 
     - Dashboard
     - Pipelines
+  - kAppNav
+    - Operator
+  - Kabanero
+    - Operator
+    - Dashboard
+    - System-Management CLI
 
 The default configuration for the Kabanero foundation components require a scheduling capacity of approximately:
   - 6 CPU cores
@@ -52,24 +58,23 @@ The following [table](prereq-details.md) illustrates the default container resou
 
 ## appsody Hardware Capacity
 
-appsody currently includes 5 different stacks:
-  - java-microprofile (249 MB)
+The default Kabanero collections are built from UBI sourced containers.
+
+appsody currently includes 5 different stacks (compressed container size):
+  - java-microprofile (308 MB)
   - java-spring-boot2 (269 MB)
-  - nodejs (397 MB)
-  - nodejs-express (401 MB)
-  - swift (472 MB)
+  - nodejs (279 MB)
+  - nodejs-express (275 MB)
+  - nodejs-loopback (288 MB)
   
  Estimated required capactiy for running 10 appsody applications (Assuming roughly 16MB per application):
-  - java-microprofile: **2650 MB**
+  - java-microprofile: **3240 MB**
   - java-spring-boot2: **2850 MB**
-  - nodejs: **4130 MB**
-  - nodejs-express: **4170 MB**
-  - swift: **4880 MB**
+  - nodejs: **2950 MB**
+  - nodejs-express: **2910 MB**
+  - nodejs-loopback:  **2940 MB**
  
- # Kabanero Restrictions
+ # Kabanero Requirements
 
-  - The Kabanero Collection has a single Java-MicroProfile Appsody Stack. 
-  - The Kabanero Operator automatically activates the example featured collection and only in the `kabanero` namespace.
-  - Kabanero only supports the example featured collection.
   - The Kabanero Operator requires `cluster-admin` privileges.
  

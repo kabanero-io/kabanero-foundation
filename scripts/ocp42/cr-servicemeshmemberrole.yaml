@@ -7,5 +7,5 @@ spec:
   members:
   # Add anywhere else you want serverless goodies to work
   - knative-serving
-  - openshift-pipelines
+  - tekton-pipelines
   - kabanero

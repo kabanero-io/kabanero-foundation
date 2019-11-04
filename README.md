@@ -19,6 +19,17 @@ The Kabanero Open Project intends to build on open source distributions of Kuber
 
 - [OKD](https://www.okd.io/) v3.11.0+
 
+### Install
+
+While logged in as a `cluster-admin` execute the install script from the kabanero-operator release
+
+`curl -s -L https://github.com/kabanero-io/kabanero-operator/releases/download/0.3.0/install.sh | bash`
+
+### Uninstall
+
+While logged in as a `cluster-admin` execute the uninstall script from the kabanero-operator release
+
+`curl -s -L https://github.com/kabanero-io/kabanero-operator/releases/download/0.3.0/uninstall.sh | bash`
 
 ### Cluster Hardware Capacity
 
@@ -32,6 +43,10 @@ The full suite of Kabanero foundation components include:
     - Pipelines
   - kAppNav
     - Operator
+  - Appsody
+    - Operator
+  - Che
+    - Operator
   - Kabanero
     - Operator
     - Dashboard
@@ -41,16 +56,6 @@ The default configuration for the Kabanero foundation components require a sched
   - 6 CPU cores
   - 16GB of memory
 
-Optional Recommended Openshift Components include:
-
-  - [openshift-logging](https://docs.openshift.com/container-platform/3.11/install_config/aggregate_logging.html)
-  - [openshift-metrics](https://docs.openshift.com/container-platform/3.11/install_config/cluster_metrics.html)
-  - [openshift-monitoring](https://docs.openshift.com/container-platform/3.11/install_config/prometheus_cluster_monitoring.html)
-
-The default configuration for the optional recommended Openshift components with defined resource requests and limits has an upper bound requiring approximately:
-  - 3.5 + ( 0.25 * #nodes ) CPU Cores
-  - 26GB + ( 1GB * #nodes ) Memory
-    - Notably elasticsearch requires a large memory node to schedule on
 
 The following [table](prereq-details.md) illustrates the default container resource requests and limits in a 3 node cluster.
 

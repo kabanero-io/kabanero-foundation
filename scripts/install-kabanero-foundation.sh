@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -Eeox pipefail
+set -Eeo pipefail
 
 ### Configuration ###
 
@@ -24,6 +24,26 @@ then
   read openshift_master_default_subdomain
 fi
 
+### Helper Functions ###
+
+# Wait until a given command has completed successfully
+# Prints the passed in quoted message ($1), duration to sleep ($2)
+# and the command to execute ("${@:3}")
+# Arguments:
+#   $1 = Message to print
+#   $2 = Duration to sleep while looping
+#   $3 = Command to execute
+function waitUntil {
+  MSG=$1
+  SLEEP=$2
+  CMD="${@:3}"
+
+  echo "waitUntil: $MSG -- $CMD"
+  until $CMD
+  do
+    sleep $SLEEP
+  done
+}
 
 ### Istio ###
 
@@ -59,19 +79,13 @@ oc new-project ${namespace} || true
 
 # Install & re-run if there is a CRD/CR timing issue
 # https://github.com/kabanero-io/kabanero-operator/issues/141
-until oc apply -f https://github.com/kabanero-io/kabanero-operator/releases/download/${KABANERO_BRANCH}/kabanero-operators.yaml
-do
-  sleep $SLEEP_LONG
-done
+waitUntil "Applying the Kabanero operator" $SLEEP_LONG oc apply -f https://github.com/kabanero-io/kabanero-operator/releases/download/${KABANERO_BRANCH}/kabanero-operators.yaml
 
 # Grant kabanero SA cluster-admin in order to create Appsody SA cluster-admin from the Collection
 oc adm policy add-cluster-role-to-user cluster-admin -z kabanero-operator -n ${namespace}
 
 # Need to check KNative Serving CRD is available before proceeding #
-until oc get crd services.serving.knative.dev 
-do
-  sleep $SLEEP_SHORT
-done
+waitUntil "Ensuring the KNative Serving CRD is available before proceeding" $SLEEP_SHORT oc get crd services.serving.knative.dev
 
 
 ### Tekton Dashboard ###
@@ -81,10 +95,7 @@ done
 # https://github.com/openshift/tektoncd-pipeline-operator/pull/24
 
 # Wait for tekton CRDs #
-until oc get crd clustertasks.tekton.dev config.operator.tekton.dev pipelineresources.tekton.dev pipelineruns.tekton.dev pipelines.tekton.dev taskruns.tekton.dev tasks.tekton.dev
-do
-  sleep $SLEEP_LONG
-done
+waitUntil "Ensuring the Tekton CRDs are available before proceeding" $SLEEP_LONG  oc get crd clustertasks.tekton.dev config.operator.tekton.dev pipelineresources.tekton.dev pipelineruns.tekton.dev pipelines.tekton.dev taskruns.tekton.dev tasks.tekton.dev
 
 release=v0.1.1
 
@@ -103,10 +114,8 @@ curl -L https://github.com/tektoncd/dashboard/releases/download/${release}/opens
   
 # Patch Dashboard #
 # https://github.com/tektoncd/dashboard/issues/364
-until oc get clusterrole tekton-dashboard-minimal
-do
-  sleep $SLEEP_SHORT
-done
+waitUntil "Ensuring Tektok Dashboard is available before proceeding" $SLEEP_SHORT oc get clusterrole tekton-dashboard-minimal
+
 oc patch clusterrole tekton-dashboard-minimal --type json -p='[{"op":"add","path":"/rules/-","value":{"apiGroups":["security.openshift.io"],"resources":["securitycontextconstraints"],"verbs":["use"]}}]'
 oc scale -n kabanero deploy tekton-dashboard --replicas=0
 sleep 5
@@ -118,10 +127,7 @@ oc patch configmap config-domain --namespace knative-serving --type='json' --pat
 
 
 # Wait for tekton CRDs #
-until oc get crd extensions.dashboard.tekton.dev
-do
-  sleep $SLEEP_LONG
-done
+waitUntil "Ensuring Tekton CRD is available before proceeding" $SLEEP_LONG oc get crd extensions.dashboard.tekton.dev
 
 # Install KAppNav if selected
 if [ "$ENABLE_KAPPNAV" == "yes" ]

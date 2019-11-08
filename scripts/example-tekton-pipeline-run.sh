@@ -50,15 +50,11 @@ cat <<EOF | oc -n ${namespace} apply -f -
 apiVersion: tekton.dev/v1alpha1
 kind: PipelineRun
 metadata:
-  labels:
-    app: tekton-app
-    tekton.dev/pipeline: java-microprofile-build-deploy-pipeline
-  name: java-microprofile-build-deploy-pipeline-run-kabanero
+  name: java-microprofile-manual-pipeline-run
   namespace: kabanero
 spec:
-  params: []
   pipelineRef:
-    name: java-microprofile-build-deploy-pipeline
+    name: java-microprofile-build-push-deploy-pipeline
   resources:
   - name: git-source
     resourceRef:

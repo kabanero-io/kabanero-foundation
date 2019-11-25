@@ -3,7 +3,7 @@
 set -Eeox pipefail
 
 # Branch/Release of Kabanero #
-KABANERO_BRANCH="${KABANERO_BRANCH:-0.2.0}"
+KABANERO_BRANCH="${KABANERO_BRANCH:-0.2.2}"
 namespace=kabanero
 
 # Make sure we can find the kabanero-operator deployment in the cluster

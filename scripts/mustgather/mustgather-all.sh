@@ -2,19 +2,34 @@
 #
 # Run this script to collect debug information
 
-set -Euox pipefail
+set -Euo pipefail
 
 LOGS_DIR="${LOGS_DIR:-kabanero-debug}"
 
 rm -Rf ${LOGS_DIR}
 
+echo "Collecting Appsody information."
 ./appsody-mustgather.sh
-./istio-mustgather.sh
-./kabanero-mustgather.sh
-./knative-mustgather.sh
-./tekton-mustgather.sh
-./che-mustgather.sh
-LOGS_DIR=$LOGS_DIR ./kappnav-mustgather.sh
 
+echo "Collecting Service Mesh information."
+./servicemesh-mustgather.sh
+
+echo "Collecting Kabanero information."
+./kabanero-mustgather.sh
+
+echo "Collecting Knative information."
+./knative-mustgather.sh
+
+echo "Collecting Tekton information."
+./tekton-mustgather.sh
+
+echo "Collecting Eclipse Che information."
+./che-mustgather.sh
+
+echo "Collecing kAppNav information."
+./kappnav-mustgather.sh
+
+echo "Creating ${LOGS_DIR}.tar.gz file."
 tar -zcf ${LOGS_DIR}.tar.gz ${LOGS_DIR}
 rm -Rf ${LOGS_DIR}
+echo "Done."

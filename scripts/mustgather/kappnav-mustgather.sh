@@ -2,17 +2,17 @@
 #
 # Run this script to collect debug information
 
-set -Euox pipefail
+set -Euo pipefail
 
 # Currently KAppNav is using the default generated name for a helm chart
 # operator.  That's the component we're searching for currently.
-COMPONENT="kappnavs.charts.helm.k8s.io"
+COMPONENT="kappnav.io"
 BIN=oc
 LOGS_DIR="${LOGS_DIR:-kappnav-debug}"
 
 # Describe and Get all api resources of component across cluster
 
-APIRESOURCES=$(${BIN} get crds -o jsonpath='{range .items[*]}{@.metadata.namespace}{"\n"}{end}' | uniq)
+APIRESOURCES=$(${BIN} get crds -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | grep ${COMPONENT})
 
 for APIRESOURCE in ${APIRESOURCES[@]}
 do

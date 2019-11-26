@@ -2,15 +2,14 @@
 #
 # Run this script to collect debug information
 
-set -Euox pipefail
+set -Euo pipefail
 
-COMPONENT="istio.io"
 BIN=oc
 LOGS_DIR="${LOGS_DIR:-kabanero-debug}"
 
 # Describe and Get all api resources of component across cluster
 
-APIRESOURCES=$(${BIN} get crds -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | grep ${COMPONENT})
+APIRESOURCES=$(${BIN} get crds -o jsonpath="{.items[*].metadata.name}" | tr ' ' '\n' | grep "istio.io\|maistra.io")
 
 for APIRESOURCE in ${APIRESOURCES[@]}
 do

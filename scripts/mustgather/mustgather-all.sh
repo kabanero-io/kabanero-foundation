@@ -26,7 +26,7 @@ echo "Collecting Tekton information."
 echo "Collecting Eclipse Che information."
 ./che-mustgather.sh
 
-echo "Collecing kAppNav information."
+echo "Collecting kAppNav information."
 ./kappnav-mustgather.sh
 
 echo "Creating ${LOGS_DIR}.tar.gz file."

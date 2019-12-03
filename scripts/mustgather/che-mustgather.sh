@@ -2,7 +2,7 @@
 #
 # Run this script to collect debug information for the Che install.
 
-set -Euox pipefail
+set -Euo pipefail
 
 COMPONENT="org.eclipse.che"
 BIN=oc

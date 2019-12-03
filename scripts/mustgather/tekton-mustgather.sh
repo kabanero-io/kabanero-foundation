@@ -2,7 +2,7 @@
 #
 # Run this script to collect debug information
 
-set -Euox pipefail
+set -Euo pipefail
 
 COMPONENT="tekton.dev"
 BIN=oc
@@ -26,7 +26,7 @@ done
 
 # Collect pod logs, describe & get additional resources
 
-NAMESPACES=(openshift-pipelines)
+NAMESPACES=(openshift-pipelines tekton-pipelines)
 APIRESOURCES=(configmaps pods routes roles rolebindings serviceaccounts services)
 
 for NAMESPACE in ${NAMESPACES[@]}

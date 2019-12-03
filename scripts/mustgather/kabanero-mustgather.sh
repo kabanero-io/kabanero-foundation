@@ -2,7 +2,7 @@
 #
 # Run this script to collect debug information
 
-set -Euox pipefail
+set -Euo pipefail
 
 COMPONENT="kabanero.io"
 BIN=oc

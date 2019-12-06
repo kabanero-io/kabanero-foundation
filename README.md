@@ -23,20 +23,20 @@ The Kabanero Open Project intends to build on open source distributions of Kuber
 
 While logged in as a `cluster-admin` execute the install script from the kabanero-operator release
 
-`curl -s -L https://github.com/kabanero-io/kabanero-operator/releases/download/0.3.2/install.sh | bash`
+`curl -s -L https://github.com/kabanero-io/kabanero-operator/releases/download/0.3.3/install.sh | bash`
 
-### Upgrade [ Release 0.3.1 to 0.3.2 ]
+### Upgrade [ Release 0.3.1+ to 0.3.3 ]
 
 While logged in as a `cluster-admin` execute the install script from the kabanero-operator release.  
 The installation script will update the CatalogSource and previously installed operators.  
 
-`curl -s -L https://github.com/kabanero-io/kabanero-operator/releases/download/0.3.2/install.sh | bash`
+`curl -s -L https://github.com/kabanero-io/kabanero-operator/releases/download/0.3.3/install.sh | bash`
 
 ### Uninstall
 
 While logged in as a `cluster-admin` execute the uninstall script from the kabanero-operator release
 
-`curl -s -L https://github.com/kabanero-io/kabanero-operator/releases/download/0.3.2/uninstall.sh | bash`
+`curl -s -L https://github.com/kabanero-io/kabanero-operator/releases/download/0.3.3/uninstall.sh | bash`
 
 ### Cluster Hardware Capacity
 

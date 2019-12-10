@@ -27,7 +27,7 @@ done
 # Collect pod logs, describe & get additional resources
 
 NAMESPACES=(kabanero)
-APIRESOURCES=(configmaps pods routes roles rolebindings serviceaccounts services)
+APIRESOURCES=(configmaps pods routes roles rolebindings serviceaccounts services tasks pipelines pipelineruns)
 
 for NAMESPACE in ${NAMESPACES[@]}
 do

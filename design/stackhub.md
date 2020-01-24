@@ -36,11 +36,88 @@
 
 #### Kind:Kabanero
 
-The Kabanero CRD will change to specifiy a Stack hub URL instead of a Collection Hub URL.  Previously, the Kabanero CRD did not concern itself with the relationship of pipelines with stacks.  The Kabanero CRD is enhanced to provide a default pipelines URL. 
+The Kabanero CRD will change to specifiy 1:many Stack hub `index.yaml` URLs instead of 1:many Collection Hub `kabanero-index.yaml` URLs.  Previously, the Kabanero CRD did not concern itself with the relationship of pipelines with stacks.   (Each index.yaml can contain 1:many stack definitions.)
+
+The Kabanero CRD also pairs the configuration for all of the stacks in a given `index.yaml`.  
+
+If the same stack version is specified in more than one `index.yaml` file, the last one wins, which makes it possible and easy to override specific stack configuration.
+
+##### Kabanero CR Example
+```
+apiVersion: kabanero.io/v1alpha2
+kind: Kabanero
+metadata:
+  name: kabanero
+spec:
+  stacks: 
+    repositories: 
+      - name: central
+        https:
+          url: https://github.com/kabanero-io/stacks/releases/download/0.6.0/index.yaml
+          skipCertVerification: false  // default is false
+      - name: incubator
+        https:
+          url: https://github.com/kabanero-io/stacks/releases/download/0.7.0/index.yaml
+          skipCertVerification: false  // default is false
+        pipelines:
+          - id: default
+            sha256: 0123456789abcdef
+            https:
+              url: https://github.com/kabanero-io/pipelines/releases/download/0.7.0/default.pipeline.tar.gz
+              skipCertVerification: false    // default is false
+    pipelines:
+      - id: default
+        sha256: 0123456789abcdef
+        https:
+          url: https://github.com/kabanero-io/pipelines/releases/download/0.6.0/default.pipeline.tar.gz
+          skipCertVerification: false   // default is false
+  triggers:
+    - id: default
+      sha256: 0123456789abcdef
+      https:
+        url: https://github.com/kabanero-io/triggers/releases/download/0.7.0/default.triggers.tar.gz
+        skipCertVerification: false   // default is false
+.
+.
+.
+```
 
 #### Kind:Stack
 
-The existing schema of the Collections CRD will be copied, with the `Kind:` field changing to `Stack`.  All other fields are relevant with one expection.  The status field `collections.url` field is being removed.  (Rationale below.)
+The existing schema of the Collections CRD will be copied, with the `Kind:` field changing to `Stack`.  All other fields are relevant with one expection.  The status field `collections.url` field is being removed.  The stack CD will be augmented with additional configuration to provide override the configuration (pipleines) for a specific version.   (Rationale below.)
+
+##### Stack CR Example
+```
+apiVersion: kabanero.io/v1alpha2
+kind: Stack
+metadata:
+  name: java-microprofile
+spec:
+  name: java-microprofile
+  versions:
+    - pipelines:
+        - id: default
+          sha256: 0123456789abcdef
+          https:
+            url: https://github.com/kabanero-io/pipelines/releases/download/0.6.0/default.pipeline.tar.gz
+            skipCertVerification: false // default is false
+      version: "0.2.15"
+      desiredState: ""
+      images:
+        - id: java-microprofile
+          image: docker.io/kabanerobeta/java-microprofile
+    - pipelines:
+        - id: default
+          sha256: 0123456789abcdef
+          https:
+            url: https://github.com/kabanero-io/pipelines/releases/download/0.7.0/default.pipeline.tar.gz
+            skipCertVerification: false // default is false
+      version: "0.2.21"
+      desiredState: ""
+      images:
+        - id: java-microprofile
+          image: docker.io/kabanerobeta/java-microprofile
+```
 
 ### Operator Managed Stacks vs. Manually Managed Stacks
 
@@ -198,7 +275,7 @@ The stewardship of the UBI variants of the Appsody stacks is not declared by thi
 
 In the future, Kabanero:
   - _*may*_ deliver a unique stack hub index.yaml as needed.
-  - take advantage of leveraging Appsody features which makes it easier to create an `index.yaml` for single stack and versions, as well as mallowing the `index.yaml` files to be built by reference.
+  - take advantage of leveraging Appsody features which makes it easier to create an `index.yaml` for single stack and versions, as well as allowing the `index.yaml` files to be built by reference.
 
 #  - Discussion:  
 

@@ -54,7 +54,7 @@ metadata:
   namespace: kabanero
 spec:
   pipelineRef:
-    name: java-microprofile-build-push-deploy-pipeline
+    name: java-microprofile-build-deploy-pl
   resources:
   - name: git-source
     resourceRef:

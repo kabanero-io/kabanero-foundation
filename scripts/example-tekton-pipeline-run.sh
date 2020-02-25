@@ -14,7 +14,7 @@ APP_REPO="${APP_REPO:-https://github.com/dacleyra/appsody-hello-world/}"
 namespace=kabanero
 
 # Cleanup
-oc -n ${namespace} delete pipelinerun java-microprofile-build-deploy-pipeline-run-kabanero || true
+oc -n ${namespace} delete pipelinerun java-microprofile-manual-pipeline-run || true
 oc -n ${namespace} delete pipelineresource docker-image git-source || true
 
 # Pipeline Resources: Source repo and destination container image

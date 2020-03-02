@@ -34,15 +34,15 @@ While logged in as a `cluster-admin` execute the install script from the kabaner
 
 ### Upgrade 
 
-#### Release 0.5.0 to 0.6.0
+#### Release 0.5 to 0.6
 
-Upgrading from 0.5.0 to 0.6.0 includes the transformation of Kabanero artifacts from Collections and Collection Hubs to Stacks and Stack Hub.  When moving from an existing 0.5 install, the operator will transform the Kabanero Custom Resource `spec.collection` to `spec.stack`.   The operator will also transform `Kind:Collection` to `Kind:Stack`. (Due to incompatible changes between Triggers 1.0 and Triggers 2.0, Existing webhooks must be reestablished.)
+Upgrading from 0.5 to 0.6 includes the transformation of Kabanero artifacts from Collections and Collection Hubs to Stacks and Stack Hub.  When moving from an existing 0.5 install, the operator will transform the Kabanero Custom Resource `spec.collection` to `spec.stack`.   The operator will also transform `Kind:Collection` to `Kind:Stack`. (Due to incompatible changes between Triggers 1.0 and Triggers 2.0, Existing webhooks must be reestablished.)
 
-#### Release 0.4.0 to 0.5.0
+#### Release 0.4 to 0.5
 
 Tekton technology transitions from Knative events to Tekton Triggers.  To leverage Tekton Triggers Collection Hub requires a Tekton TriggerBinding and TriggerTemplates for each pipeline.  (The Kabanero 0.5 version of the Collection Hub is enhanced with bindings and templates.)  Existing webhooks must be reestablished.
 
-#### Release 0.3.1 to 0.4.0
+#### Release 0.3 to 0.4
 
 While logged in as a `cluster-admin` execute the install script from the kabanero-operator release.  
 The installation script will update the CatalogSource and previously installed operators.  

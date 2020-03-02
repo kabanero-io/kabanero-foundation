@@ -36,7 +36,7 @@ While logged in as a `cluster-admin` execute the install script from the kabaner
 
 #### Release 0.5.0 to 0.6.0
 
-Upgrading from 0.5.0 to 0.6.0 includes the transformation of Kabanero artifacts from Collections and Collection Hubs to Stacks and Stack Hub.  When moving from an existing 0.5 install, the operator will transform the Kabanero Custom Resource `spec.collection` to `spec.stack`.  (Due to incompatible changes between Triggers 1.0 and Triggers 2.0, Existing webhooks must be reestablished.)
+Upgrading from 0.5.0 to 0.6.0 includes the transformation of Kabanero artifacts from Collections and Collection Hubs to Stacks and Stack Hub.  When moving from an existing 0.5 install, the operator will transform the Kabanero Custom Resource `spec.collection` to `spec.stack`.   The operator will also transform `Kind:Collection` to `Kind:Stack`. (Due to incompatible changes between Triggers 1.0 and Triggers 2.0, Existing webhooks must be reestablished.)
 
 #### Release 0.4.0 to 0.5.0
 

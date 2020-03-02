@@ -46,7 +46,7 @@ oc apply -f pv.yaml
 
 Login to the Tekton dashboard using openshift credentials `http://tekton-dashboard-tekton-pipelines.apps.openshift.subdomain`
 
-If your github repository is private, create a secret with your github credentials.  Use `kabanero-pipeline` for service account and associate the secret with the service account.
+Use the service account called `kabanero-pipeline` to run your pipeline.  If your github repository is private, create a secret with your github credentials and associate the secret with the service account.
 
 ![](secret.png)
 

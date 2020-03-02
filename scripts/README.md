@@ -7,7 +7,7 @@
 
 ## Sample Appsody project with manual Tekton pipeline run
 
-Cluster may have a Dynamic Storage Provisioner, or create a Persistent Volume for the pipeline to use. A sample hostPath `pv.yaml` is provided.
+Your cluster may have a Dynamic Storage Provisioner.  If not, create a `Persistent Volume` for the pipeline to use. A sample NFS based  `pv.yaml` is provided.  Update the `pv.yaml` file with your NFS server file.  It usually is your infrastructure node address.
 ```
 oc apply -f pv.yaml
 ```
@@ -38,16 +38,15 @@ Use appsody to create a sample project
 3. Initialize a java microprofile project `appsody init kabanero/java-microprofile`
 4. Push the project to your github repository
 
-Create a Persistent Volume for the tekton pipeline to use. A sample hostPath `pv.yaml` is provided.
+Your cluster may have a Dynamic Storage Provisioner.  If not, create a `Persistent Volume` for the pipeline to use. A sample NFS based  `pv.yaml` is provided.  Update the `pv.yaml` file with your NFS server file.  It usually is your infrastructure node address.
+
 ```
 oc apply -f pv.yaml
 ```
 
 Login to the Tekton dashboard using openshift credentials `http://tekton-dashboard-tekton-pipelines.apps.openshift.subdomain`
 
-If your github repository is private, create a secret with your github credentials. Associate the secret with the service account that the pipeline will run as. 
-
-![](secret.png)
+Use the service account called `kabanero-pipeline` to run your pipeline.  If your github repository is private, create a secret with your github credentials and associate the secret with the service account.
 
 Create a webhook using the dashboard, providing the necessary information. Provide the access token for creating a webhook.
 

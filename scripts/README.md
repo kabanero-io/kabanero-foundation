@@ -48,8 +48,6 @@ Login to the Tekton dashboard using openshift credentials `http://tekton-dashboa
 
 Use the service account called `kabanero-pipeline` to run your pipeline.  If your github repository is private, create a secret with your github credentials and associate the secret with the service account.
 
-![](secret.png)
-
 Create a webhook using the dashboard, providing the necessary information. Provide the access token for creating a webhook.
 
 ![](webhook.png)

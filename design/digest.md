@@ -113,9 +113,21 @@ When retiring an older patch level of an application stack container, a best pra
 1. Deactivate older patch level of application from Kabanero. (Referesh/Synchronize)
 1. Remove old patch level of application stack container from the container regsitry.
 
-### Digest mismatch detection
+### Compliance detection
 
-### Digest mismatch action
+Kabanero has various places during the lifecycle of applications and during its normal operation for which container digests can be examined to validate compliance with the semver best practices above.  Noting the possible detection locations, we can then assign actions based on configured policy at those decision points.
+
+- **pre-build**.  Prior to executing the build pipeline tasks we validate whether the base application stack the application is being built with is activated.  The determination of "active" today is loosely based on tags.  In 0.6, we do examine the digest of the container tagged in `.appsody-config.yaml` and match that against the active container digests.
+
+- **post-build**.  Although we've prevalidated the container digest was active prior to build, there is a time-of-check, time-of-use issue where the digest of the tag specified in `.appsody-config.yaml`.  It is possible that the container tag has been reassigned to a container with a different digest.  
+
+- **pre-deploy**.  Prior to deploying an application the digest of the underlying base application stack can be examined for matches with active application stacks.
+
+- **ad-hoc**.  Using the CLI and REST APIs (via Kabanero Unique Experience), the active application stacks version container digests can be interrogated to see if are the same as when the stack was activated.
+
+- **periodic**.  The Kabanero operator can interrogate the active appliation stacks container digests to see if they are the same as when the stack was activated.
+
+### Governance actions
 
 ### Custom Resource Changes
 

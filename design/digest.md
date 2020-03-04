@@ -123,41 +123,103 @@ Kabanero has various places during the lifecycle of applications and during its 
 
 - **pre-deploy**.  Prior to deploying an application the digest of the underlying base application stack can be examined for matches with active application stacks.
 
-- **ad-hoc**.  Using the CLI and REST APIs (via Kabanero Unique Experience), the active application stacks version container digests can be interrogated to see if are the same as when the stack was activated.
+- **ad-hoc**.  Using the CLI and REST APIs (via Kabanero Unique Experience), the active application stacks version container digests can be interrogated to see if are the same as when the stack was activated.  The operator will store the digest of a given application stack version when it is first activated and update the status field of the Stack CR with the `first-activation-digest` as well as display the `current-digest` when the Stack CR is retrieved.
 
-- **periodic**.  The Kabanero operator can interrogate the active appliation stacks container digests to see if they are the same as when the stack was activated.
+- **periodic**.  The Kabanero operator can interrogate the active appliation stacks container digests to see if they are the same as when the stack was activated.  (This detection alternative is not-implemented by the implementation for this feature.)
 
 ### Governance actions
+
+In the interest of being conservative related to introducing policy, since it is unclear whether integration with advanced policy frameworks might be desirable in the future, we simplify the choice of action.  These simple actions allow for easy configuration of consistent behavior accross stacks.  To simplify the configuration, we blend activation policy with digest mismatch policy.  Governance Action Policy:
+
+**governance-policy: and stack-policy:**
+
+A new field `governance-policy:` is added to the Kabanero CR with a subfield `stack-policy:`.  The `stack-policy:` subfiedd will specify one of the following policies, which will provide governance configuration for all stacks managed by Kabanero.
+
+- **strict-digest**.  Indicates that usage of container tags for application stacks follow the strict guidelines as documented above, and as such, Kabanero will enforce that compliance by failing pipelines at the lifecycle point of detection.  `PATCH` tags are not expected to be assigned to different containers (in otherwords, they will always map to the same digest.)  Kabanero will provide validation that tags and digests are strictly adhering to the best practices and will fail pipelines where a digest violation has been detected or is not represented by an active application stack.
+
+The CLI and REST API will indicate digest mismatches.   The Kabanero operator will report digest mismatch detections for Stack version status.
+
+- **warn-digest**. Indicates that usage of container tags for application stacks should follow the strict guidelines as documented above, however, Kabanero will issue warning messages in the pipeline run logs at the lifecycle point of detection.  Note:  To allow folks to use the public stack hub directly, as in try-it scenarios, _warn-digest_ is the default.  When the community publishes new stacks -- the `latest`, `MAJOR`, and `MAJOR.MINOR` tags maybe reassigned.  For Kabanero deployments which are currently executing and configured to the public stack hub release, the `MAJOR.MINOR` tag is assigned to a digest which has not been activated.  _strict-digest_ would cause immediate failures.   For those applications specifying only `MAJOR.MINOR` tags in their `.appsody-config.yaml`, Kabanero will ensure there is an active patch level of the application stack active with the specified `MAJOR.MINOR` release and permit the pipeline to continue.
+
+The CLI and REST API will indicate digest mismatches.   The Kabanero operator will report digest mismatch detections for Stack version status.
+
+- **ignore-digest**.  Indicates that the detection point digest mismatches are ignored.  Kabanero will ensure that a version of the application stack is active.  Similar to _warn-digest_, for those applications specifying only `MAJOR.MINOR` tags in their `.appsody-config.yaml`, Kabanero will ensure there is an active patch level of the application stack active with the specified `MAJOR.MINOR` release  and permit the pipeline to continue.
+
+The CLI and REST API will not return digests.  The Kabanero operator will not process digests.
+
+- **none**.  Disables any stack active state, tag or digest validation.  Pipelines will be allowed to progress without any stack governance.
+
+The CLI and REST API will not return digests.  The Kabanero operator will not process digests.  
 
 ### Custom Resource Changes
 
 #### Kind:Kabanero
 
-The Kabanero CRD will change to .
+The Kabanero CRD will change to add a global field `governancepolicy` with a subfield `stackpolicy` which will indicate either `strict-digest`, `warn-digest`, `ignore-digest`, or `none`.  The default is `warn-digest`.
 
 ##### Kabanero CR Example
 
+apiVersion: kabanero.io/v1alpha2
+kind: Kabanero
+metadata:
+  name: kabanero
+spec:
+  stacks: 
+    repositories: 
+      - name: central
+        https:
+          url: https://github.com/kabanero-io/stacks/releases/download/0.6.0/index.yaml
+          skipCertVerification: false  // default is false
+      - name: incubator
+        https:
+          url: https://github.com/kabanero-io/stacks/releases/download/0.7.0/index.yaml
+          skipCertVerification: false  // default is false
+        pipelines:
+          - id: default
+            sha256: 0123456789abcdef
+            https:
+              url: https://github.com/kabanero-io/pipelines/releases/download/0.7.0/default.pipeline.tar.gz
+              skipCertVerification: false    // default is false
+    pipelines:
+      - id: default
+        sha256: 0123456789abcdef
+        https:
+          url: https://github.com/kabanero-io/pipelines/releases/download/0.6.0/default.pipeline.tar.gz
+          skipCertVerification: false   // default is false
+  governance-policy:
+    stack-policy: strict-digest
+  triggers:
+    - id: default
+      sha256: 0123456789abcdef
+      https:
+        url: https://github.com/kabanero-io/triggers/releases/download/0.7.0/default.triggers.tar.gz
+        skipCertVerification: false   // default is false
+
 #### Kind:Stack
 
-##### Stack CR Example
-
+The Stack CR has new status returned for each stack version that is active to indicate `first-digest-activation` and `current-digest`, highlighting whether there has been a detected mismatch during a periodic detection.  (Note: this value remains unchanged even during deactivation/reactivation using the CLI or REST APIs.)  This status is returned when the governance policy indicates a need to maintain this status; otherwise it is suppressed.
 
 ### Kabanero Operator
 
+The operator will store the digest of a given application stack version when it is first activated.  When the Stack CR is displayed, the current digest will read and will be added to the stack version status.
+
 ## Day 2 Operations
+
+Not applicable.
 
 ### Kabanero Upgrade Scenarios
 
 #### Kabanero 0.8 to 0.9
 
+There are no configuration upgrade transformations known at this time.
 
 #### (Kabanero 0.6 to 0.9
 
+There are no configuration upgrade transformations known at this time.
 
 #### (Kabanero updates from 0.1-0.5)
 
 No support for directly upgrading from these releases.
-
 
 ##  Dependent Projects
 
@@ -169,28 +231,22 @@ Not applicable.
 
 Not applicable.  
 
-## Kabanero Operator
-
-Most of this specification applies to the Kabanero operator, but specifically:
-
-
 ## Kabanero Pipelines
-
 
 ### Stack Publish Pipeline
 A new stack build and publish pipeline is introduced, wired to an appsody stack repository.  This pipeline will demonstrate the best practice procedures for making the new release available for new applications.
 
-### Build Validation
+### Pre-Build, Post-Build and Pre-Deploy Validation Steps
 
-### Deploy Validation
+The pre-build and pre-deploy pipeline steps are enhanced to support the governance policy and act accordingly.  A new post-build step is produced to support the governance policy and act accordingly and added to the Kabanero default pipelines.
 
 ## Kabanero CLI and REST APIs
 
-The Kabanero CLI has methods for stacks and stack hubs.  The CLI is updated to display active container digest-when-activated and current-digest value (if different.)
+ The CLI and REST APIs are updated for Stack related Read methods to display active container status `first-activation-digest` and `current-digest` value (if different.)
 
 ## Kabanero Guides
 
-A new guide is introduced to leverage the new stack pipeline.
+None.
 
 
 ## Kabanero Documentation
@@ -199,11 +255,11 @@ Tagging best practices and documentation describing the digest validation policy
 
 ## kabanero.io
 
-Champ's lifecycle using the new stack build and publish pipeline should be documented.
+Add content to `What's-new` blog.
 
 ## Kabanero Eventing Prototype
 
-Kabanero eventing implements a digest validation detection point, and as such needs to follow the defined policy for digest mismatches.
+Kabanero eventing implements a digest validation detection point, and as such needs to follow the defined governance-policy.
 
 #  - Other Considerations:  
 

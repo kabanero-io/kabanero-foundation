@@ -137,19 +137,19 @@ A new field `governance-policy:` is added to the Kabanero CR with a subfield `st
 
 - **strict-digest**.  Indicates that usage of container tags for application stacks follow the strict guidelines as documented above, and as such, Kabanero will enforce that compliance by failing pipelines at the lifecycle point of detection.  `PATCH` tags are not expected to be assigned to different containers (in otherwords, they will always map to the same digest.)  Kabanero will provide validation that tags and digests are strictly adhering to the best practices and will fail pipelines where a digest violation has been detected or is not represented by an active application stack.
 
-The CLI and REST API will indicate digest mismatches.   The Kabanero operator will report digest mismatch detections for Stack version status.
+  The CLI and REST API will indicate digest mismatches.   The Kabanero operator will report digest mismatch detections for Stack version status.
 
 - **warn-digest**. Indicates that usage of container tags for application stacks should follow the strict guidelines as documented above, however, Kabanero will issue warning messages in the pipeline run logs at the lifecycle point of detection.  Note:  To allow folks to use the public stack hub directly, as in try-it scenarios, _warn-digest_ is the default.  When the community publishes new stacks -- the `latest`, `MAJOR`, and `MAJOR.MINOR` tags maybe reassigned.  For Kabanero deployments which are currently executing and configured to the public stack hub release, the `MAJOR.MINOR` tag is assigned to a digest which has not been activated.  _strict-digest_ would cause immediate failures.   For those applications specifying only `MAJOR.MINOR` tags in their `.appsody-config.yaml`, Kabanero will ensure there is an active patch level of the application stack active with the specified `MAJOR.MINOR` release and permit the pipeline to continue.
 
-The CLI and REST API will indicate digest mismatches.   The Kabanero operator will report digest mismatch detections for Stack version status.
+   The CLI and REST API will indicate digest mismatches.   The Kabanero operator will report digest mismatch detections for Stack version status.
 
 - **ignore-digest**.  Indicates that the detection point digest mismatches are ignored.  Kabanero will ensure that a version of the application stack is active.  Similar to _warn-digest_, for those applications specifying only `MAJOR.MINOR` tags in their `.appsody-config.yaml`, Kabanero will ensure there is an active patch level of the application stack active with the specified `MAJOR.MINOR` release  and permit the pipeline to continue.
 
-The CLI and REST API will not return digests.  The Kabanero operator will not process digests.
+   The CLI and REST API will not return digests.  The Kabanero operator will not process digests.
 
 - **none**.  Disables any stack active state, tag or digest validation.  Pipelines will be allowed to progress without any stack governance.
 
-The CLI and REST API will not return digests.  The Kabanero operator will not process digests.  
+  The CLI and REST API will not return digests.  The Kabanero operator will not process digests.  
 
 ### Custom Resource Changes
 
@@ -158,7 +158,7 @@ The CLI and REST API will not return digests.  The Kabanero operator will not pr
 The Kabanero CRD will change to add a global field `governancepolicy` with a subfield `stackpolicy` which will indicate either `strict-digest`, `warn-digest`, `ignore-digest`, or `none`.  The default is `warn-digest`.
 
 ##### Kabanero CR Example
-
+```
 apiVersion: kabanero.io/v1alpha2
 kind: Kabanero
 metadata:
@@ -194,6 +194,7 @@ spec:
       https:
         url: https://github.com/kabanero-io/triggers/releases/download/0.7.0/default.triggers.tar.gz
         skipCertVerification: false   // default is false
+```
 
 #### Kind:Stack
 

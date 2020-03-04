@@ -1,7 +1,7 @@
 # Container Registry Digest Governance
 
 ## Key Concepts / Background
-- One of the key concepts of Kabanero is to help teams come together to ensure that what is intended to be used for building applications is being used.  Applications and Application Stacks are designed to count on and leverage semver.org versions.  While the semver concept is great for understanding the meaning of tags as they are used throughout the lifecycle of applications and their base application stacks, semver does not define any best practices for tagging containers in a container registry.  By design, container registries allow the same instance of a container (identified by a digest/sha256) can be labeled with one to many tags values.  While the container identifier (digest) is immuteable, the specific tags associated with that instance of the container can change over time.
+- One of the key concepts of Kabanero is to help teams come together to ensure that what is intended to be used for building applications is being used.  Applications and Application Stacks are designed to count on and leverage semver.org versions.  While the semver concept is great for understanding the meaning of tags as they are used throughout the lifecycle of applications and their base application stacks, semver itself, does not define any best practices for tagging containers in a container registry.  By design, container registries allow the same instance of a container (identified by a digest/sha256) can be labeled with one to many tags values.  While the container identifier (digest) is immuteable, the specific tags associated with that instance of the container can change over time.
 
 - There are implications of the procedure Champ manages building and publishes application stacks for usage in Kabanero and the enterprise's container tagging strategy.  
 
@@ -15,7 +15,7 @@
 
 (*) There are special rules if the `MAJOR` level of the version is `0` or if the `PATCH` level is suffixed with non-numeric characters. For more detail refer to [semver.org](https://semver.org).
 
-Kabanero builds features based on an adherence to semver.org, however Kabanero should allow 
+ sermver.org adherence allows Kabanero the opportunity to provide features that take advantage of this disciplne, however Kabanero should not mandate a particular tagging policy.  
 
 ## User stories
 
@@ -23,7 +23,7 @@ Kabanero builds features based on an adherence to semver.org, however Kabanero s
 
 - As Champ (architect), I would like to be notified (warned) and/or view on the dashboard a notification that the digests of active application stacks have changed since activation.
 
-- As Champ (architect), I would like to specify policy for actions to take when digest changes or mismatches occur, e.g. if a build is attempted using an application stack whose digest is not active, I would like to be able to fail the build, warn or do nothing based on my enterprise's tagging strategy.
+- As Champ (architect), I would like to specify policy for actions to take when digest changes or mismatches are detected, e.g. if a build is attempted using an application stack whose digest is not active, I would like to be able to direct Kabanero to fail the build, warn or do nothing based on my enterprise's tagging strategy.
 
 ## As-is
 
@@ -62,16 +62,19 @@ A new `MINOR` version has been published.  The `latest` and `MAJOR` tags are rea
 A new `MAJOR` version has been published.  The `latest` tags are reassigned to the `2.0.0` container, and new `MAJOR` and `MAJOR.MINOR` tags are also assigned to the container.
 
 ![2.0.1](./images/digest-2.0.1.gif)
+
 *New Patch Release*
 
 A new patch level arrives for `2.0.0`.  The `latest`, `MAJOR` and `MAJOR.MINOR` tags are assigned to `2.0.1` container.
 
 ![3.0.0](./images/digest-3.0.0.gif)
+
 *New Major Release*
 
 A new `MAJOR` version has been published.  The `latest` tags are reassigned to the `3.0.0` container, and new `MAJOR` and `MAJOR.MINOR` tags are also assigned to the container.
 
 ![1.1.1](./images/digest-1.1.1.gif)
+
 *New Patch for Prior Release*
 
 Since the new container advances the `PATCH` level of `1.1`, and that `PATCH` is the latest semver release of `MAJOR` version `1`, both the `MAJOR` and `MAJOR.MINOR` tags are reassinged to the `1.1.1` container.  Notice that even though this container was published chronologically latest, the `latest` tag remains with the latest `PATCH` level of the latest `MAJOR.MINOR` release.
@@ -91,7 +94,7 @@ Kabanero Stack configuration is driven with tags, the enterprise managing stack 
 
 As a best practice, the stacks included in the Kabanero stack-hub specify only the `MAJOR.MINOR` tags for identifying the application stack version this application depends.  This value, stored in the `.appsody-config.yaml` essentially declares that this application is not dependent on any specific `PATCH` level, only the feature set that is introduced and provided by the application stack at the `MAJOR.MINOR` level.  Using the tag lookup strategy documented previously, we can depend on the `MAJOR.MINOR` tag to point the latest released `PATCH` level.
 
-Therefore, before we tag the newly minted `PATCH` level container with the `lastest`, `MAJOR`, and/or `MAJOR.MINOR` tags, we need to activate the stack semver patch level with the Kabanero operator.  Consider the case where Kabanero is configured with a given application stack version of `0.2.22.`. In the container registry, the `latest`, `0` and `0.2` tags point at same patch level `0.2.22`.  Introducing a new patch level `0.2.23`, we update the `latest`, `0`, and `0.2` at the same time.  If a developer pushes an application update to GitHub that has specified `:0.2` tag in the project `.appsody-config.yaml` file.  The Kabanero managed pipeline executes, and it validates that the desired stack is active.  Looking up the `0.2` tag in the container registry, we'll find the same container tagged `0.2.23`, however Kabanero has not yet activated `0.2.23`.  In 0.6, Kabanero will issue warning messages in the pipeline run output, however this design looks to introduce new behaviors, such as fail the pipeline when this situation is detected.
+Therefore, before we tag the newly minted `PATCH` level container with the `lastest`, `MAJOR`, and/or `MAJOR.MINOR` tags, we need to activate the stack semver patch level with the Kabanero operator.  Consider the case where Kabanero is configured with a given application stack version of `0.2.22`. In the container registry, the `latest`, `0` and `0.2` tags point at same patch level `0.2.22`.  Introducing a new patch level `0.2.23`, we update the `latest`, `0`, and `0.2` at the same time.  If a developer pushes an application update to GitHub that has specified `:0.2` tag in the project `.appsody-config.yaml` file.  The Kabanero managed pipeline executes, and it validates that the desired stack is active.  Looking up the `0.2` tag in the container registry, we'll find the same container tagged `0.2.23`, however Kabanero has not yet activated `0.2.23`.  In 0.6, Kabanero will issue warning messages in the pipeline run output, however this design looks to introduce new behaviors, such as fail the pipeline when this situation is detected.
 
 When publishing a new patch level of an application stack container, a best practice is:
 
@@ -105,11 +108,10 @@ When publishing a new patch level of an application stack container, a best prac
 When retiring an older patch level of an application stack container, a best practice is:
 
 1. Rebuild, test and redeploy all relevant applications built on the older patch level.
-1. Remove application container built on older patch level.
+1. Remove application containers built on older patch level from the container registry
 1. Remove old index from stack-hub index shared with developers.
 1. Deactivate older patch level of application from Kabanero. (Referesh/Synchronize)
-1. Remove old patch level of application stack container.
-
+1. Remove old patch level of application stack container from the container regsitry.
 
 ### Digest mismatch detection
 
@@ -192,7 +194,6 @@ Champ's lifecycle using the new stack build and publish pipeline should be docum
 Kabanero eventing implements a digest validation detection point, and as such needs to follow the defined policy for digest mismatches.
 
 #  - Other Considerations:  
-
 
 #  - Discussion:  
 

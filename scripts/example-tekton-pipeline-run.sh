@@ -53,6 +53,15 @@ metadata:
   name: java-microprofile-manual-pipeline-run
   namespace: kabanero
 spec:
+  params:
+  - name: event-type
+    value: push
+  - name: event-ref
+    value: refs/heads/master
+  - name: docker-imagename
+    value: java-microprofile-image
+  - name: docker-imagetag
+    value: latest
   pipelineRef:
     name: java-microprofile-build-deploy-pl
   resources:

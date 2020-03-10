@@ -14,7 +14,7 @@ oc apply -f pv.yaml
 
 Create the pipeline and execute the example manual pipeline run
 ```
-APP_REPO=https://github.com/dacleyra/appsody-hello-world/ ./example-tekton-pipeline-run.sh
+APP_REPO=https://github.com/kabanero-io/sample-java-microprofile ./example-tekton-pipeline-run.sh
 ```
 
 By default, the application container image will be built and pushed to the Internal Registry in the kabanero project, and then deployed as a Knative Service.
@@ -34,7 +34,7 @@ Access application at `http://appsody-hello-world.kabanero.my.openshift.master.d
 Use appsody to create a sample project
 
 1. Download [appsody](https://github.com/appsody/appsody/releases)
-2. Add the kabanero collection repository to appsody `appsody repo add kabanero https://github.com/kabanero-io/collections/releases/download/0.3.0/kabanero-index.yaml`
+2. Add the kabanero collection repository to appsody `appsody repo add kabanero https://github.com/kabanero-io/collections/releases/download/0.6.1/kabanero-index.yaml`
 3. Initialize a java microprofile project `appsody init kabanero/java-microprofile`
 4. Push the project to your github repository
 

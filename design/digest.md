@@ -1,13 +1,13 @@
 # Container Registry Digest Governance
 
 ## Key Concepts / Background
-- One of the key concepts of Kabanero is to help teams come together to ensure that what is intended to be used for building applications is being used.  Applications and Application Stacks are designed to count on and leverage semver.org versions.  While the semver concept is great for understanding the meaning of tags as they are used throughout the lifecycle of applications and their base application stacks, semver itself, does not define any best practices for tagging containers in a container registry.  By design, container registries allow the same instance of a container (identified by a digest/sha256) can be labeled with one to many tags values.  While the container identifier (digest) is immuteable, the specific tags associated with that instance of the container can change over time.
+- One of the key concepts of Kabanero is to help teams come together to ensure that what is intended to be used for building applications is actually being used.  Applications and Application Stacks are designed to count on and leverage semver.org versions.  While the semver concept is great for understanding the meaning of tags as they are used throughout the lifecycle of applications and their base application stacks, semver itself, does not define any best practices for tagging containers in a container registry.  By design, container registries allow the same instance of a container (identified by a digest/sha256) can be labeled with one to many tags values.  While the container identifier (digest) is immuteable, the specific tags associated with that instance of the container can change over time.
 
 - There are implications of the procedure Champ manages building and publishes application stacks for usage in Kabanero and the enterprise's container tagging strategy.  
 
 ### semver.org
 
-- The software engineering community has published a de facto manifesto on semantic versioning. Essentially versions are limited to 3 digits(*):  `MAJOR.MINOR.PATCH`.  
+- The software engineering community has published a de facto manifesto on semantic versioning. Essentially versions are limited to 3 digits(*):  `MAJOR.MINOR.PATCH`.  Changes to:
 
   - `PATCH` indicates the container contains fixes only, completely backwards compatible.
   - `MINOR` indicates the container contains new features, completely backwards compatible.
@@ -15,7 +15,7 @@
 
 (*) There are special rules if the `MAJOR` level of the version is `0` or if the `PATCH` level is suffixed with non-numeric characters. For more detail refer to [semver.org](https://semver.org).
 
- sermver.org adherence allows Kabanero the opportunity to provide features that take advantage of this disciplne, however Kabanero should not mandate a particular tagging policy.  
+ sermver.org adherence allows Kabanero the opportunity to provide features that take advantage of this disciplne, however Kabanero will not mandate a particular tagging policy.  
 
 ## User stories
 
@@ -27,7 +27,7 @@
 
 ## As-is
 
-- As of 0.6, a Kabanero pipeline step validates that the to-be built application has specified an application stack that is active.  This specification is made in the `.appsody-config.yaml` file of the to-be built repository, which is typically set by Champ when building the application stack.  The public stacks have specified a `MAJOR.MINOR` tag, however this tag, as noted, is configurable in the stack and established for new applications in the project directory by `appsody init`.   During the build step, the Kabanero validation logic reads the digest of the `MAJOR.MINOR` tag and ensures that an application stack version with that digest is active -- if not, a warning message is output in the pipeline run stream.
+- As of 0.6, a Kabanero pipeline step validates that the to-be built application has specified an application stack that is active.  This specification is made in the `.appsody-config.yaml` file of the to-be built repository, which is defined in the application stack.  The public stacks have specified a `MAJOR.MINOR` tag, however the form of the tag is configurable in the stack and established for new applications in the project directory by `appsody init`.   During the build step, the Kabanero validation logic reads the digest of the `MAJOR.MINOR` tag and ensures that an application stack version with that digest is active -- if not, a warning message is output in the pipeline run stream.  This behavior is less than ideal because it is notifying the developer in the pipeline run for builds instead of notifying operations.
 
 ## To-be
 
@@ -43,7 +43,7 @@ Note: Specific scenario based examples are presented in the `Putting it all toge
 
 ### Best practice semver container registry tagging
 
-Having disciplne and defining policy for managing container registry tags is critical in ensuring that applications are built with what we expect them to be built.  Kabanero architecture is best leveraged using semver assignment of application stack container tags.  Study the following series of diagrams:
+Having disciplne and defining policy for managing container registry tags is critical in ensuring that applications are built with the specific containers we expect.  Kabanero architecture is best leveraged using semver assignment of application stack container tags.  Study the following series of diagrams:
 
 ![1.0.1](./images/digest-1.0.1.gif) 
 
@@ -92,7 +92,7 @@ To net the discussion, tags:
 
 To get the most out of Kabanero features, Kabanero design expects application stack tags to follow the semver tagging strategy documented above, although it is not strictly required.
 
-Kabanero Stack configuration is driven with tags, the enterprise managing stack versions following semver.   When an application stack patch level is ready to be introduced to developers, we need to consider the need to configure Kabanero to activate the new patch before new lifecycle events for applications built on that stack arrive in the managing Kubernetes cluster.  In otherwords, the new patch level needs to be activated before we try to build, deploy applications built on the new patch level.
+Kabanero Stack configuration is driven with tags, the enterprise managing stack versions following semver.   When an application stack patch level is ready to be introduced to developers, we need to consider the need to configure Kabanero to activate the new patch level before new lifecycle events for applications built on that stack arrive in the managing Kubernetes cluster.  In otherwords, the new patch level should be activated before we try to build, deploy applications built on the new patch level.
 
 As a best practice, the stacks included in the Kabanero stack-hub specify only the `MAJOR.MINOR` tags for identifying the application stack version this application depends.  This value, stored in the `.appsody-config.yaml` essentially declares that this application is not dependent on any specific `PATCH` level, only the feature set that is introduced and provided by the application stack at the `MAJOR.MINOR` level.  Using the tag lookup strategy documented previously, we can depend on the `MAJOR.MINOR` tag to point the latest released `PATCH` level.
 
@@ -123,11 +123,9 @@ Kabanero has various places during the lifecycle of applications and during its 
 
 - **post-build**.  Although we've prevalidated the container digest was active prior to build, there is a time-of-check, time-of-use issue where the digest of the tag specified in `.appsody-config.yaml`.  It is possible that the container tag has been reassigned to a container with a different digest.  
 
-- **pre-deploy**.  Prior to deploying an application the digest of the underlying base application stack can be examined for matches with active application stacks.
+- **pre-deploy**.  Prior to deploying an application the labels of the underlying base application stack can be examined for matches with active application stacks.
 
-- **ad-hoc**.  Using the CLI and REST APIs (via Kabanero Unique Experience), the active application stacks version container digests can be interrogated to see if are the same as when the stack was activated.  The operator will store the digest of a given application stack version when it is first activated and update the status field of the Stack CR with the `first-activation-digest` as well as display the `current-digest` when the Stack CR is retrieved.
-
-- **periodic**.  The Kabanero operator can interrogate the active appliation stacks container digests to see if they are the same as when the stack was activated.  (This detection alternative is not-implemented by the implementation for this feature.)
+- **ad-hoc**.  Using the CLI and REST APIs (via Kabanero Unique Experience), the active application stacks version container digests can be interrogated to see if are the same as when the stack was activated.  The operator will store the digest of a given application stack version when it is first activated and update the status field of the Stack CR with the `digest-at-activation`.
 
 ### Governance actions
 
@@ -143,11 +141,11 @@ A new field `governance-policy:` is added to the Kabanero CR with a subfield `st
 
   This policy is for use for teams that have their container tagging policy and activation procedures nailed down and expect to rigidly follow them; any digest mismatch represents a serious process problem and needs to be identified immediately.
 
-- **active-digest**. (DEFAULT) Indicates that usage of container tags for application stacks follow the tagging best practices as documented above; however, when Kabanero detects a digest mismatch, Kabanero substitutes a digest from a compatible `PATCH` level of the same `MAJOR.MINOR` that is currently activated.  This policy still ensures that only application stacks that are activated are used to build applications, however it allows for a more flexible process for updating the container registry tags.  When Kabanero activates a version of an application stack, it stores its current digest in the Stack CR.  When Kabanero reaches a governance detection point, when there is a mismatch, Kabanero will interrogate the active stacks and determine the best active `PATCH` digest for the requested `MAJOR.MINOR` level. e.g. if a build request occurs for `:2.0`, and the `:2.0` tag is bound to a container digest that is not active, Kabanero will look for active appliation stacks with the same `MAJOR.MINOR` tags and use the digest stored for the latest `PATCH` stack.
+- **active-digest**. (DEFAULT) Indicates that usage of container tags for application stacks follow the tagging best practices as documented above.  When Kabanero detects a digest mismatch, it substitutes a digest from an compatible active `PATCH` level within the same `MAJOR.MINOR`.  This policy  ensures that only application stacks that are activated are used to build applications. It also allows for a more flexible process for updating the container registry tags.  When Kabanero activates a version of an application stack, it stores its current digest in the Stack CR.  When Kabanero reaches a governance detection point, where there is a mismatch, Kabanero will interrogate the active stacks and determine the best active `PATCH` digest within the `MAJOR.MINOR` level. For example, if a build request occurs for `:2.0`, and the `:2.0` tag is bound to a container digest that is not active, Kabanero will look for active appliation stacks with the same `MAJOR.MINOR` tags and use the digest stored for the latest `PATCH` stack.
 
-  The CLI and REST API, Kabanero User Experience will indicate digest mismatches.  The Kabanero operator will report digest mismatch detections for Stack version status.
+  The CLI and REST API, Kabanero user experience will indicate digest mismatches.  The Kabanero operator will report digest mismatch detections for Stack version status.
 
-  This policy is default to allow the usage of the public stack hubs with Kabanero, expecially in try it and demo scenarios.  Since the community publishes the application stacks and manages the container registry tags independently of deployments of Kabanero, `strict-digest` would would be 
+  This policy is default to allow the lowest friction onramp for developers and usage of the public stack hubs with Kabanero, especially in try it and demo scenarios.
 
 - **ignore-digest**.  Kabanero still governs application stacks, but leveraging tags only.  Kabanero will ensure that a valid matching `PATCH` level is active at the governance detection points.  Kabnanero does not consider digests for governance decisions.  
 
@@ -169,7 +167,7 @@ _Container Registry Example_
 ![Kabanero Stack State](./images/kabanero-stack-state.png)
 _Kabanero Activated Stack State Example_
 
-Example governance scenarios:
+Example governance scenarios for build lifecycle detection points:
 
 | tag | detection point | policy | action | digest |
 |-----|-------|-----------|----------------|------|
@@ -226,12 +224,29 @@ Example governance scenarios:
 |         |            | ignore-digest | discard | |
 |         |            | none | keep | |
 
+For life-cycle detection points after post build, the application is built on a specific 3-digit container.  Application stacks are labeled with a `dev.appsody.stack.version` label which indicates the stack build level. 
+
+| tag | detection point | policy | action | 
+|-----|-------|-----------|----------------|
+| :1.1.0  | deploy      | strict-digest | deploy |
+|         |             | active-digest | deploy |
+|         |             | ignore-digest | deploy |
+|         |             | none | build | deploy |
+
+
+| tag | detection point | policy | action |
+|-----|-------|-----------|----------------|
+| :1.1.1  | deploy      | strict-digest | fail | 
+|         |            | active-digest | fail | 
+|         |            | ignore-digest | fail |
+|         |            | none | deploy | 
+
 
 ### Custom Resource Changes
 
 #### Kind:Kabanero
 
-The Kabanero CRD will change to add a global field `governancepolicy` with a subfield `stackpolicy` which will indicate either `strict-digest`, `warn-digest`, `ignore-digest`, or `none`.  The default is `warn-digest`.
+The Kabanero CRD will change to add a spec field `governancepolicy` with a subfield `stackpolicy` which will indicate either `strict-digest`, `active-digest`, `ignore-digest`, or `none`.  The default is `active-digest`.
 
 ##### Kabanero CR Example
 ```
@@ -274,7 +289,7 @@ spec:
 
 #### Kind:Stack
 
-The Stack CR has new status returned for each stack version that is active to indicate `first-digest-activation` and `current-digest`, highlighting whether there has been a detected mismatch during a periodic detection.  (Note: this value remains unchanged even during deactivation/reactivation using the CLI or REST APIs.)  This status is returned when the governance policy indicates a need to maintain this status; otherwise it is suppressed.
+The Stack CR has new status returned for each stack version that is active to indicate `digest-at-activation`. This status is returned when the governance policy indicates a need to maintain this status; otherwise it is suppressed.
 
 ### Kabanero Operator
 
@@ -319,7 +334,7 @@ The pre-build and pre-deploy pipeline steps are enhanced to support the governan
 
 ## Kabanero CLI and REST APIs
 
- The CLI and REST APIs are updated for Stack related Read methods to display active container status `first-activation-digest` and `current-digest` value (if different.)
+ The CLI and REST APIs are updated for Stack related Read methods to display active container status `digest-at-activation` (from the Stack CR) and `current-digest` value (from the container registry).
 
 ## Kabanero Guides
 

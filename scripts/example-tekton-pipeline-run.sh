@@ -8,7 +8,7 @@ set -Eeuox pipefail
 DOCKER_IMAGE="${DOCKER_IMAGE:-image-registry.openshift-image-registry.svc:5000/kabanero}"
 
 # Appsody project GitHub repository #
-APP_REPO="${APP_REPO:-https://github.com/dacleyra/appsody-hello-world/}"
+APP_REPO="${APP_REPO:-https://github.com/kabanero-io/sample-java-microprofile}"
 
 ### Tekton Example ###
 namespace=kabanero

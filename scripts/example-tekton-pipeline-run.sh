@@ -5,10 +5,10 @@ set -Eeuox pipefail
 ### Configuration ###
 
 # Resultant Appsody container image #
-DOCKER_IMAGE="${DOCKER_IMAGE:-image-registry.openshift-image-registry.svc:5000/kabanero/java-microprofile}"
+DOCKER_IMAGE="${DOCKER_IMAGE:-image-registry.openshift-image-registry.svc:5000/kabanero}"
 
 # Appsody project GitHub repository #
-APP_REPO="${APP_REPO:-https://github.com/dacleyra/appsody-hello-world/}"
+APP_REPO="${APP_REPO:-https://github.com/kabanero-io/sample-java-microprofile}"
 
 ### Tekton Example ###
 namespace=kabanero

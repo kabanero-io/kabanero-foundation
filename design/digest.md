@@ -246,7 +246,7 @@ For life-cycle detection points after post build, the application is built on a 
 
 #### Kind:Kabanero
 
-The Kabanero CRD will change to add a spec field `governancepolicy` with a subfield `stackpolicy` which will indicate either `strict-digest`, `active-digest`, `ignore-digest`, or `none`.  The default is `active-digest`.
+The Kabanero CRD will change to add a spec field `governancePolicy` with a subfield `stackPolicy` which will indicate either `strictDigest`, `activeDigest`, `ignoreDigest`, or `none`.  The default is `activeDigest`.
 
 ##### Kabanero CR Example
 ```
@@ -277,8 +277,8 @@ spec:
         https:
           url: https://github.com/kabanero-io/pipelines/releases/download/0.6.0/default.pipeline.tar.gz
           skipCertVerification: false   // default is false
-  governance-policy:
-    stack-policy: strict-digest
+  governancePolicy:
+    stackPolicy: strictDigest
   triggers:
     - id: default
       sha256: 0123456789abcdef
@@ -289,7 +289,7 @@ spec:
 
 #### Kind:Stack
 
-The Stack CR has new status returned for each stack version that is active to indicate `digest-at-activation`. This status is returned when the governance policy indicates a need to maintain this status; otherwise it is suppressed.
+The Stack CR has new status returned for each stack version that is active, indicating the container's digest at stack activation.  This can be found at `status.versions[x].images[y].digest.activation`.
 
 ### Kabanero Operator
 

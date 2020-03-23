@@ -33,11 +33,9 @@
 - As Champ (architect), I would like to be notified (warned) and/or view on the dashboard a notification that the digests of active application stacks have changed since activation.
 
 - As Champ, I want to be able to deprecate and then remove old versions of Application Stacks from use
-  - Enable: I want to be able to identify developers, projects and deployments that will be affected by the deprecation
-  - Enable: I want to be able to notify them of the deprecation and removal and help them to become compliant ahead of time
-Verify: I want to be able to verify the use of compliant stacks at build time and warn (deprecation) or error (removal) those builds, both notifying the developers and the operations team of warnings/errors
-Verify: I want to be able to identify already built projects (but that aren’t having new code changes) that are non-compliant and provide warnings/errors to the developers/owners
-Enforce: I want to warn/error when attempts are made to deploy projects based on deprecated or removed stacks to specified environments
+  - Enable: I want to be able to notify developers of the deprecation and removal and help them to become compliant ahead of time
+  - Verify: I want to be able to verify the use of compliant stacks at build time and warn (deprecation) or error (removal) those builds, both notifying the developers and the operations team of warnings/errors
+  - Enforce: I want to warn/error when attempts are made to deploy projects based on deprecated or removed stacks to specified environments
 
 - As Champ (architect), I would like to specify policy for actions to take when digest changes or mismatches are detected, e.g. if a build is attempted using an application stack whose digest is not active, I would like to be able to direct Kabanero to fail the build, warn or do nothing based on my enterprise's tagging strategy.
 

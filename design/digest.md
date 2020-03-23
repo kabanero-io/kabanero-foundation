@@ -5,6 +5,15 @@
 
 - There are implications of the procedure Champ manages building and publishes application stacks for usage in Kabanero and the enterprise's container tagging strategy.  
 
+- The digest design fits into a series of improvements (designs) we are making to more precisely govern, visualize and manage stack lifecycles. This design relates to features for Champ which will
+
+  - Enable: Precise container governance for builds, which allows Champ and Todd fine-grained control over what specific instance of a container is being used to build new applications.  This feature can be leveraged such that Champ and Todd do not build any retired or non-approved application stack version.
+  - Enable: Improved governance for deployment, which allows ensure that the underlying application stack is appropriate for application deployments.  (*)
+  
+    When combined with the stackhub improvements delivered in 0.6, Champ and Todd have a low-touch communication with developers related to specific valid fixpack levels (though the Appsody and Codewind repo configuration) while still having flexibility to new publish application stacks in a non-disruptive fashion.
+
+    (*)  With improvements in the Appsody CLI, the governance policy for deployment could be made more precise by labeling applications using Appsody Build with the digest of the underlying application stack.  See: https://github.com/appsody/appsody/issues/957.
+
 ### semver.org
 
 - The software engineering community has published a de facto manifesto on semantic versioning. Essentially versions are limited to 3 digits(*):  `MAJOR.MINOR.PATCH`.  Changes to:
@@ -22,6 +31,13 @@
 - As a user of the Kabanero open upstream project, I would like to have documentation on the relationship between the application stack management and governance in my Kubernetes cluster and their underlying container registry digests and tags.
 
 - As Champ (architect), I would like to be notified (warned) and/or view on the dashboard a notification that the digests of active application stacks have changed since activation.
+
+- As Champ, I want to be able to deprecate and then remove old versions of Application Stacks from use
+  - Enable: I want to be able to identify developers, projects and deployments that will be affected by the deprecation
+  - Enable: I want to be able to notify them of the deprecation and removal and help them to become compliant ahead of time
+Verify: I want to be able to verify the use of compliant stacks at build time and warn (deprecation) or error (removal) those builds, both notifying the developers and the operations team of warnings/errors
+Verify: I want to be able to identify already built projects (but that aren’t having new code changes) that are non-compliant and provide warnings/errors to the developers/owners
+Enforce: I want to warn/error when attempts are made to deploy projects based on deprecated or removed stacks to specified environments
 
 - As Champ (architect), I would like to specify policy for actions to take when digest changes or mismatches are detected, e.g. if a build is attempted using an application stack whose digest is not active, I would like to be able to direct Kabanero to fail the build, warn or do nothing based on my enterprise's tagging strategy.
 
@@ -224,7 +240,7 @@ Example governance scenarios for build lifecycle detection points:
 |         |            | ignore-digest | discard | |
 |         |            | none | keep | |
 
-For life-cycle detection points after post build, the application is built on a specific 3-digit container.  Application stacks are labeled with a `dev.appsody.stack.version` label which indicates the stack build level. 
+For life-cycle detection points after post build, the application is built on a specific 3-digit container.  Application stacks are labeled with a `dev.appsody.stack.version` label which indicates the stack build level. (*) 
 
 | tag | detection point | policy | action | 
 |-----|-------|-----------|----------------|
@@ -240,6 +256,25 @@ For life-cycle detection points after post build, the application is built on a 
 |         |            | active-digest | fail | 
 |         |            | ignore-digest | fail |
 |         |            | none | deploy | 
+
+
+(*) https://github.com/appsody/appsody/issues/957 is opened to improve the ability of Kabanero to manage governance policy for container digests during deployment as well.  The current suggestion is to add a new label: `dev.appsody.stack.digest` to application containers.
+
+We will proactively code for the optional label, and if present Kabanero governs the deployment following these examples:
+
+|tag | digest | detection point | policy | action | 
+|----|----|-------|-----------|----------------|
+| :1.1.0 | aaf783  | deploy      | strict-digest | deploy |
+| |         |             | active-digest | deploy |
+| | ignored        |             | ignore-digest | deploy |
+| | ignored        |             | none | build | deploy |
+
+|tag | digest | detection point | policy | action | 
+|----|----|-------|-----------|----------------|
+| :1.1.1 | 08cdef  | deploy      | strict-digest | fail |
+| |         |             | active-digest | fail |
+| | ignored |             | ignore-digest | fail |
+| | ignored |             | none | build | deploy |
 
 
 ### Custom Resource Changes

@@ -5,6 +5,15 @@
 
 - There are implications of the procedure Champ manages building and publishes application stacks for usage in Kabanero and the enterprise's container tagging strategy.  
 
+- The digest design fits into a series of improvements (designs) we are making to more precisely govern, visualize and manage stack lifecycles. This design relates to features for Champ which will
+
+  - Enable: Precise container governance for builds, which allows the enterprise fine-grained control over what specific instance of a container is being used to build new applications.  This feature can be leveraged such that the enterprise do not build any retired or non-approved application stack version.
+  - Enable: Improved governance for deployment, which allows ensure that the underlying application stack is appropriate for application deployments.  (*)
+  
+    When combined with the stackhub improvements delivered in 0.6, the enterprise have a low-touch communication with developers related to specific valid fixpack levels (through the Appsody and Codewind repo configuration) while still having flexibility to new publish application stacks in a non-disruptive fashion.
+
+    (*)  With improvements in the Appsody CLI, the governance policy for deployment could be made more precise by labeling applications using Appsody Build with the digest of the underlying application stack.  See: https://github.com/appsody/appsody/issues/957.
+
 ### semver.org
 
 - The software engineering community has published a de facto manifesto on semantic versioning. Essentially versions are limited to 3 digits(*):  `MAJOR.MINOR.PATCH`.  Changes to:
@@ -22,6 +31,11 @@
 - As a user of the Kabanero open upstream project, I would like to have documentation on the relationship between the application stack management and governance in my Kubernetes cluster and their underlying container registry digests and tags.
 
 - As Champ (architect), I would like to be notified (warned) and/or view on the dashboard a notification that the digests of active application stacks have changed since activation.
+
+- As Champ, I want to be able to deprecate and then remove old versions of Application Stacks from use
+  - Enable: I want to be able to notify developers of the deprecation and removal and help them to become compliant ahead of time
+  - Verify: I want to be able to verify the use of compliant stacks at build time and warn (deprecation) or error (removal) those builds, both notifying the developers and the operations team of warnings/errors
+  - Enforce: I want to warn/error when attempts are made to deploy projects based on deprecated or removed stacks to specified environments
 
 - As Champ (architect), I would like to specify policy for actions to take when digest changes or mismatches are detected, e.g. if a build is attempted using an application stack whose digest is not active, I would like to be able to direct Kabanero to fail the build, warn or do nothing based on my enterprise's tagging strategy.
 
@@ -131,31 +145,30 @@ Kabanero has various places during the lifecycle of applications and during its 
 
 In the interest of being conservative related to introducing policy, since it is unclear whether integration with advanced policy frameworks might be desirable in the future, we simplify the choice of action.  These simple actions allow for easy configuration of consistent behavior accross stacks.  To simplify the configuration, we blend activation policy with digest mismatch policy.  Governance Action Policy:
 
-**governance-policy: and stack-policy:**
+**governancePolicy: and stackPolicy:**
 
-A new field `governance-policy:` is added to the Kabanero CR with a subfield `stack-policy:`.  The `stack-policy:` subfield will specify one of the following policies, which will provide governance configuration for all stacks managed by Kabanero.
+A new field `governancePolicy:` is added to the Kabanero CR with a subfield `stackPolicy:`.  The `stackPolicy:` subfield will specify one of the following policies, which will provide governance configuration for all stacks managed by Kabanero.
 
-- **strict-digest**.  Indicates that usage of container tags for application stacks follow the strict guidelines as documented above, and as such, Kabanero will enforce that compliance by failing pipelines at the lifecycle point of detection.  `PATCH` tags are not expected to be assigned to different containers (in otherwords, they will always map to the same digest.)  Kabanero will provide validation that tags and digests are strictly adhering to the best practices and will fail pipelines where a digest violation has been detected or is not represented by an active application stack.
-
-  The CLI and REST API, Kabanero User Experience will indicate digest mismatches.   The Kabanero operator will report digest mismatch detections for Stack version status.
+- **strictDigest**.  Indicates that usage of container tags for application stacks follow the strict guidelines as documented above, and as such, Kabanero will enforce that compliance by failing pipelines at the lifecycle point of detection.  `PATCH` tags are not expected to be assigned to different containers (in otherwords, they will always map to the same digest.)  Kabanero will provide validation that tags and digests are strictly adhering to the best practices and will fail pipelines where a digest violation has been detected or is not represented by an active application stack.
 
   This policy is for use for teams that have their container tagging policy and activation procedures nailed down and expect to rigidly follow them; any digest mismatch represents a serious process problem and needs to be identified immediately.
 
-- **active-digest**. (DEFAULT) Indicates that usage of container tags for application stacks follow the tagging best practices as documented above.  When Kabanero detects a digest mismatch, it substitutes a digest from an compatible active `PATCH` level within the same `MAJOR.MINOR`.  This policy  ensures that only application stacks that are activated are used to build applications. It also allows for a more flexible process for updating the container registry tags.  When Kabanero activates a version of an application stack, it stores its current digest in the Stack CR.  When Kabanero reaches a governance detection point, where there is a mismatch, Kabanero will interrogate the active stacks and determine the best active `PATCH` digest within the `MAJOR.MINOR` level. For example, if a build request occurs for `:2.0`, and the `:2.0` tag is bound to a container digest that is not active, Kabanero will look for active appliation stacks with the same `MAJOR.MINOR` tags and use the digest stored for the latest `PATCH` stack.
+- **activeDigest**. (DEFAULT) Indicates that usage of container tags for application stacks follow the tagging best practices as documented above.  When Kabanero detects a digest mismatch, it substitutes a digest from an compatible active `PATCH` level within the same `MAJOR.MINOR`.  This policy  ensures that only application stacks that are activated are used to build applications. It also allows for a more flexible process for updating the container registry tags.  When Kabanero activates a version of an application stack, it stores its current digest in the Stack CR.  When Kabanero reaches a governance detection point, where there is a mismatch, Kabanero will interrogate the active stacks and determine the best active `PATCH` digest within the `MAJOR.MINOR` level. For example, if a build request occurs for `:2.0`, and the `:2.0` tag is bound to a container digest that is not active, Kabanero will look for active appliation stacks with the same `MAJOR.MINOR` tags and use the digest stored for the latest `PATCH` stack.  
 
-  The CLI and REST API, Kabanero user experience will indicate digest mismatches.  The Kabanero operator will report digest mismatch detections for Stack version status.
+When .appsody-config.yaml specifies:
+
+- `:MAJOR`.  The Kabanero operator will use the latest active `PATCH` level of the latest `MINOR` release with the same `MAJOR`.  If there are no `PATCH` levels active for any `MINOR` releases of the specified `MAJOR` level, builds will fail.
+- `:MAJOR.MINOR`.  The Kabanero operator will use the latest active `PATCH` level of the specified `MAJOR.MINOR`. If there are no `PATCH` levels active for the specified `MAJOR.MINOR` release, builds will fail.
+- `:MAJOR.MINOR.PATCH`.  The Kabanero operator will use the specified stack if active.  If the specified `PATCH` level is not active, builds will fail.
+
 
   This policy is default to allow the lowest friction onramp for developers and usage of the public stack hubs with Kabanero, especially in try it and demo scenarios.
 
-- **ignore-digest**.  Kabanero still governs application stacks, but leveraging tags only.  Kabanero will ensure that a valid matching `PATCH` level is active at the governance detection points.  Kabnanero does not consider digests for governance decisions.  
-
-  The CLI and REST API will not return digests.  The Kabanero operator will not process digests.
+- **ignoreDigest**.  Kabanero still governs application stacks, but leveraging tags only.  Kabanero will ensure that a valid matching `PATCH` level is active at the governance detection points.  Kabnanero does not consider digests for governance decisions.  
 
   This policy is useful for teams that do not have strict tagging policy for their containers, or have adopted tagging policy that makes other digest-centric governance policies painful.
 
 - **none**.  Disables any stack active state, tag or digest validation.  Pipelines will be allowed to progress without any stack governance.
-
-  The CLI and REST API will not return digests.  The Kabanero operator will not process digests.  
 
 ### Putting it all together
 
@@ -171,82 +184,101 @@ Example governance scenarios for build lifecycle detection points:
 
 | tag | detection point | policy | action | digest |
 |-----|-------|-----------|----------------|------|
-| :latest | pre-build | strict-digest | build | 78bb45 |
-|         |            | active-digest | build | 78bb45 |
-|         |            | ignore-digest | build | 78bb45 |
+| :latest | pre-build | strictDigest | build | 78bb45 |
+|         |            | activeDigest | build | 78bb45 |
+|         |            | ignoreDigest | build | 78bb45 |
 |         |            | none | build | 78bb45 |
-|         | post-build | strict-digest | keep | |
-|         |            | active-digest | keep | |
-|         |            | ignore-digest | keep | |
+|         | post-build | strictDigest | keep | |
+|         |            | activeDigest | keep | |
+|         |            | ignoreDigest | keep | |
 |         |            | none | keep | |
 
 | tag | detection point | policy | action | digest |
 |-----|-------|-----------|----------------|------|
-| :1      | pre-build  | strict-digest | fail |  |
-|         |            | active-digest | build | aaf783 |
-|         |            | ignore-digest | build | 08cdef |
+| :1      | pre-build  | strictDigest | fail |  |
+|         |            | activeDigest | build | aaf783 |
+|         |            | ignoreDigest | build | 08cdef |
 |         |            | none | build | 08cdef |
-|         | post-build | strict-digest | discard |  |
-|         |            | active-digest | keep | |
-|         |            | ignore-digest | keep | |
+|         | post-build | strictDigest | discard |  |
+|         |            | activeDigest | keep | |
+|         |            | ignoreDigest | keep | |
 |         |            | none | keep | |
 
 | tag | detection point | policy | action | digest |
 |-----|-------|-----------|----------------|------|
-| :1.0    | pre-build  | strict-digest | build | 9485jd |
-|         |            | active-digest | build | 9485jd |
-|         |            | ignore-digest | build | 9485jd |
+| :1.0    | pre-build  | strictDigest | build | 9485jd |
+|         |            | activeDigest | build | 9485jd |
+|         |            | ignoreDigest | build | 9485jd |
 |         |            | none | build | 9485jd |
-|         | post-build | strict-digest | discard | |
-|         |            | active-digest | keep | |
-|         |            | ignore-digest | keep | |
+|         | post-build | strictDigest | discard | |
+|         |            | activeDigest | keep | |
+|         |            | ignoreDigest | keep | |
 |         |            | none | keep | |
 
 | tag | detection point | policy | action | digest |
 |-----|-------|-----------|----------------|------|
-| :1.1    | pre-build  | strict-digest | fail |  |
-|         |            | active-digest | build | aaf783 |
-|         |            | ignore-digest | build | 08cdef |
+| :1.1    | pre-build  | strictDigest | fail |  |
+|         |            | activeDigest | build | aaf783 |
+|         |            | ignoreDigest | build | 08cdef |
 |         |            | none | build | 08cdef |
-|         | post-build | strict-digest | discard | |
-|         |            | active-digest | keep | |
-|         |            | ignore-digest | keep | |
+|         | post-build | strictDigest | discard | |
+|         |            | activeDigest | keep | |
+|         |            | ignoreDigest | keep | |
 |         |            | none | keep | |
 
 | tag | detection point | policy | action | digest |
 |-----|-------|-----------|----------------|------|
-| :1.1.1  | pre-build  | strict-digest | fail | n/a |
-|         |            | active-digest | fail | n/a |
-|         |            | ignore-digest | fail | n/a |
+| :1.1.1  | pre-build  | strictDigest | fail | n/a |
+|         |            | activeDigest | fail | n/a |
+|         |            | ignoreDigest | fail | n/a |
 |         |            | none | build | 08cdef |
-|         | post-build | strict-digest | discard | |
-|         |            | active-digest | discard | |
-|         |            | ignore-digest | discard | |
+|         | post-build | strictDigest | discard | |
+|         |            | activeDigest | discard | |
+|         |            | ignoreDigest | discard | |
 |         |            | none | keep | |
 
-For life-cycle detection points after post build, the application is built on a specific 3-digit container.  Application stacks are labeled with a `dev.appsody.stack.version` label which indicates the stack build level. 
+For life-cycle detection points after post build, the application is built on a specific 3-digit container.  Application stacks are labeled with a `dev.appsody.stack.version` label which indicates the stack build level. (*) 
 
 | tag | detection point | policy | action | 
 |-----|-------|-----------|----------------|
-| :1.1.0  | deploy      | strict-digest | deploy |
-|         |             | active-digest | deploy |
-|         |             | ignore-digest | deploy |
+| :1.1.0  | deploy      | strictDigest | deploy |
+|         |             | activeDigest | deploy |
+|         |             | ignoreDigest | deploy |
 |         |             | none | build | deploy |
 
 
 | tag | detection point | policy | action |
 |-----|-------|-----------|----------------|
-| :1.1.1  | deploy      | strict-digest | fail | 
-|         |            | active-digest | fail | 
-|         |            | ignore-digest | fail |
+| :1.1.1  | deploy      | strictDigest | fail | 
+|         |            | activeDigest | fail | 
+|         |            | ignoreDigest | fail |
 |         |            | none | deploy | 
+
+
+(*) https://github.com/appsody/appsody/issues/957 is opened to improve the ability of Kabanero to manage governance policy for container digests during deployment as well.  The current suggestion is to add a new label: `dev.appsody.stack.digest` to application containers.
+
+We will proactively code for the optional label, and if present Kabanero governs the deployment following these examples:
+
+|tag | digest | detection point | policy | action | 
+|----|----|-------|-----------|----------------|
+| :1.1.0 | aaf783  | deploy      | strictDigest | deploy |
+| |         |             | activeDigest | deploy |
+| | ignored        |             | ignoreDigest | deploy |
+| | ignored        |             | none | build | deploy |
+
+|tag | digest | detection point | policy | action | 
+|----|----|-------|-----------|----------------|
+| :1.1.1 | 08cdef  | deploy      | strictDigest | fail |
+| |         |             | activeDigest | fail |
+| | ignored |             | ignoreDigest | fail |
+| | ignored |             | none | build | deploy |
 
 
 ### Custom Resource Changes
 
 #### Kind:Kabanero
 
-The Kabanero CRD will change to add a spec field `governancepolicy` with a subfield `stackpolicy` which will indicate either `strict-digest`, `active-digest`, `ignore-digest`, or `none`.  The default is `active-digest`.
+The Kabanero CRD will change to add a spec field `governancepolicy` with a subfield `stackpolicy` which will indicate either `strictDigest`, `activeDigest`, `ignoreDigest`, or `none`.  The default is `activeDigest`.
 
 ##### Kabanero CR Example
 ```
@@ -277,8 +309,8 @@ spec:
         https:
           url: https://github.com/kabanero-io/pipelines/releases/download/0.6.0/default.pipeline.tar.gz
           skipCertVerification: false   // default is false
-  governance-policy:
-    stack-policy: strict-digest
+  governancePolicy:
+    stackPolicy: strictDigest
   triggers:
     - id: default
       sha256: 0123456789abcdef
@@ -351,7 +383,7 @@ Add content to `What's-new` blog.
 
 ## Kabanero Eventing Prototype
 
-Kabanero eventing implements a digest validation detection point, and as such needs to follow the defined governance-policy.
+Kabanero eventing implements a digest validation detection point, and as such needs to follow the defined governancePolicy.
 
 #  - Other Considerations:  
 

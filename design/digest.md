@@ -309,8 +309,8 @@ spec:
         https:
           url: https://github.com/kabanero-io/pipelines/releases/download/0.6.0/default.pipeline.tar.gz
           skipCertVerification: false   // default is false
-  governance-policy:
-    stack-policy: strictDigest
+  governancePolicy:
+    stackPolicy: strictDigest
   triggers:
     - id: default
       sha256: 0123456789abcdef
@@ -383,7 +383,7 @@ Add content to `What's-new` blog.
 
 ## Kabanero Eventing Prototype
 
-Kabanero eventing implements a digest validation detection point, and as such needs to follow the defined governance-policy.
+Kabanero eventing implements a digest validation detection point, and as such needs to follow the defined governancePolicy.
 
 #  - Other Considerations:  
 

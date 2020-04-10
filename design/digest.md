@@ -153,16 +153,19 @@ A new field `governancePolicy:` is added to the Kabanero CR with a subfield `sta
 
   This policy is for use for teams that have their container tagging policy and activation procedures nailed down and expect to rigidly follow them; any digest mismatch represents a serious process problem and needs to be identified immediately.
 
-- **activeDigest**. (DEFAULT) Indicates that usage of container tags for application stacks follow the tagging best practices as documented above.  When Kabanero detects a digest mismatch, it substitutes a digest from an compatible active `PATCH` level within the same `MAJOR.MINOR`.  This policy  ensures that only application stacks that are activated are used to build applications. It also allows for a more flexible process for updating the container registry tags.  When Kabanero activates a version of an application stack, it stores its current digest in the Stack CR.  When Kabanero reaches a governance detection point, where there is a mismatch, Kabanero will interrogate the active stacks and determine the best active `PATCH` digest within the `MAJOR.MINOR` level. For example, if a build request occurs for `:2.0`, and the `:2.0` tag is bound to a container digest that is not active, Kabanero will look for active appliation stacks with the same `MAJOR.MINOR` tags and use the digest stored for the latest `PATCH` stack.  
+- **activeDigest**. (DEFAULT) Indicates that usage of container tags for application stacks follow the tagging best practices as documented above.  
 
-When .appsody-config.yaml specifies:
+  During a "pre-build" stackPolicy enforcement point, when Kabanero detects a digest mismatch, it substitutes a tag from a compatible active `PATCH` level within the same `MAJOR.MINOR`.  This policy  ensures that only application stacks that are activated are used to build applications. It also allows for a more flexible process for updating the container registry tags.  When Kabanero activates a version of an application stack, it stores its current digest in the Stack CR.  When Kabanero enforces stackPolicy and there is a mismatch, Kabanero will interrogate the active stacks and determine the best active `PATCH` digest within the `MAJOR.MINOR` level. For example, if a build request occurs for `:2.0`, and the `:2.0` tag is bound to a container digest that is not active, Kabanero will look for active appliation stacks with the same `MAJOR.MINOR` tags and use the tag stored for the latest `PATCH` version to build the application.  
 
-- `:MAJOR`.  The Kabanero operator will use the latest active `PATCH` level of the latest `MINOR` release with the same `MAJOR`.  If there are no `PATCH` levels active for any `MINOR` releases of the specified `MAJOR` level, builds will fail.
-- `:MAJOR.MINOR`.  The Kabanero operator will use the latest active `PATCH` level of the specified `MAJOR.MINOR`. If there are no `PATCH` levels active for the specified `MAJOR.MINOR` release, builds will fail.
-- `:MAJOR.MINOR.PATCH`.  The Kabanero operator will use the specified stack if active.  If the specified `PATCH` level is not active, builds will fail.
+  During a "pre-build" stackPolicy enforcement point, when .appsody-config.yaml specifies:
 
+  - `:MAJOR`.  The Kabanero operator will use the latest active `PATCH` level of the latest `MINOR` release with the same `MAJOR`.  If there are no `PATCH` levels active for any `MINOR` releases of the specified `MAJOR` level, builds will fail.
+  - `:MAJOR.MINOR`.  The Kabanero operator will use the latest active `PATCH` level of the specified `MAJOR.MINOR`. If there are no `PATCH` levels active for the specified `MAJOR.MINOR` release, builds will fail.
+  - `:MAJOR.MINOR.PATCH`.  The Kabanero operator will use the specified stack if active.  If the specified `PATCH` level is not active, builds will fail.
 
-  This policy is default to allow the lowest friction onramp for developers and usage of the public stack hubs with Kabanero, especially in try it and demo scenarios.
+  This policy is the default to allow the lowest friction onramp for developers and usage of the public stack hubs with Kabanero, especially in try it and demo scenarios.
+  
+  During a "post-build" stackPolicy enforcement point, the version must be active as specified in the .appsody-config.yaml file, because the application has already been built at that level specific level. If the version is no longer active, as determined by the digest, the post-build stackPolicy enforcement will fail. The behavior at a "pre-deploy" point is also the same, the application image has already been built and the stack version, by digest, must be active. 
 
 - **ignoreDigest**.  Kabanero still governs application stacks, but leveraging tags only.  Kabanero will ensure that a valid matching `PATCH` level is active at the governance detection points.  Kabnanero does not consider digests for governance decisions.  
 
@@ -244,7 +247,7 @@ For life-cycle detection points after post build, the application is built on a 
 | :1.1.0  | deploy      | strictDigest | deploy |
 |         |             | activeDigest | deploy |
 |         |             | ignoreDigest | deploy |
-|         |             | none | build | deploy |
+|         |             | none | deploy | deploy |
 
 
 | tag | detection point | policy | action |
@@ -264,14 +267,14 @@ We will proactively code for the optional label, and if present Kabanero governs
 | :1.1.0 | aaf783  | deploy      | strictDigest | deploy |
 | |         |             | activeDigest | deploy |
 | | ignored        |             | ignoreDigest | deploy |
-| | ignored        |             | none | build | deploy |
+| | ignored        |             | none | deploy | deploy |
 
 |tag | digest | detection point | policy | action | 
 |----|----|-------|-----------|----------------|
 | :1.1.1 | 08cdef  | deploy      | strictDigest | fail |
 | |         |             | activeDigest | fail |
 | | ignored |             | ignoreDigest | fail |
-| | ignored |             | none | build | deploy |
+| | ignored |             | none | deploy | deploy |
 
 
 ### Custom Resource Changes

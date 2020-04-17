@@ -32,6 +32,8 @@
 
 - As Champ (architect), I would like to be notified (warned) and/or view on the dashboard a notification that the digests of active application stacks have changed since activation.
 
+<mst> Can we reword this user story. I think way to deprecate a stack is using CLI to "deactivate" until it is removed from the stack hub yaml file. </mst>
+
 - As Champ, I want to be able to deprecate and then remove old versions of Application Stacks from use
   - Enable: I want to be able to notify developers of the deprecation and removal and help them to become compliant ahead of time
   - Verify: I want to be able to verify the use of compliant stacks at build time and warn (deprecation) or error (removal) those builds, both notifying the developers and the operations team of warnings/errors

@@ -17,7 +17,7 @@
 
 - The Java Microprofile application stack provider would like to deprecate the Java Microprofile application stack.
 
-- As a Java-Microprofile application stack consumer, I would like to have a transition period where I can refactor my application to leverage the Open Liberty applciation stack.
+- As a Java-Microprofile application stack consumer, I would like to have a transition period where I can refactor my application to leverage the Open Liberty application stack.
 
 ## As-is
 
@@ -110,5 +110,4 @@ Products based on Kabanero, which need to continue to deliver the Kabanero Java 
 It is decided that for the time being, we would not enhance the Kabanero operator, REST API and CLI to indicate that a stack is marked deprecated.  The Appsody CLI indicates to the developer that the stack is deprecated, and presumably the enterprise would have a plan for removing the stack.
 
 #  - Discussion:  
-
 

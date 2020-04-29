@@ -7,7 +7,7 @@
 
 - The Java Microprofile application stack maintained in Kabanero is derived from the similar stack at Appsody.  Kabanero will inherit the stack metadata which marks the stack deprecated, as well as the container changes which will print deprecated messages as part of the application start up.  This is a best practice.  The deprecation marker and start up messages indicates to any user of the stack that they should start making plans to change technologies.
 
-- The Java Microprofile application stack will continue to be maintained for period of time as determined by the stack provider.  A minimum of 3 milestones is considered a best practice, although some stack providers may choose a different transitional period.
+- The Java Microprofile application stack will continue to be maintained for a period of time as determined by the stack provider.  A minimum of 3 milestones is considered a best practice, although some stack providers may choose a different transitional period.
 
 - The default Kabanero stack-hub index will be updated to remove the Java Microprofile application stack.  Users wishing to continue to leverage the Java Microprofile application stack can add the stack index to their own customized stack-hub for usage with Kabanero.
 
@@ -110,6 +110,5 @@ Products based on Kabanero, which need to continue to deliver the Kabanero Java 
 It is decided that for the time being, we would not enhance the Kabanero operator, REST API and CLI to indicate that a stack is marked deprecated.  The Appsody CLI indicates to the developer that the stack is deprecated, and presumably the enterprise would have a plan for removing the stack.
 
 #  - Discussion:  
-
 
 

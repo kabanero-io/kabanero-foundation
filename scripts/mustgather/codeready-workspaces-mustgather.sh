@@ -1,17 +1,18 @@
 #!/bin/bash
 #
-# Run this script to collect debug information for the Che install.
+# Run this script to collect debug information for the CodeReadyWorkspaces install.
 
 set -Euo pipefail
 
 COMPONENT="org.eclipse.che"
 BIN=oc
-LOGS_DIR="${LOGS_DIR:-che-debug}"
-KEY_PATTTERN="[-._]che[-._]|\<che\>|eclipse|theia|postgres|codewind"
-KEY_LABEL="app=che"
+LOGS_DIR="${LOGS_DIR:-kabanero-debug}"
+CRW_DIR="codeready-workspaces"
+KEY_PATTTERN="[-._]codeready[-._]|\<codeready\>|[-._]che[-._]|\<che\>|eclipse|theia|postgres|codewind|keycloak|devfile|plugin-registry"
+KEY_LABEL="app=codeready"
 CLUSTERRESDIR="kube-system"
 
-# Describe and Get all Che associated resources across the cluster.
+# Describe and Get all codeready-workspaces associated resources across the cluster.
 CRDS=$(${BIN} get crds -o jsonpath='{.items[*].metadata.name}' | tr ' ' '\n' | grep ${COMPONENT})
 
 for CUSTOMRESOURCE in ${CRDS[@]}
@@ -21,7 +22,7 @@ do
 	for NAMESPACE in ${NAMESPACES[@]}
 	do
 		# Get CR instance data.
-		NSPATH=${LOGS_DIR}/namespaces/${NAMESPACE}
+		NSPATH=${LOGS_DIR}/${CRW_DIR}/namespaces/${NAMESPACE}
 		CRINTSPATH=${NSPATH}/${CUSTOMRESOURCE}
 		mkdir -p ${CRINTSPATH}
 		${BIN} describe ${CUSTOMRESOURCE} -n ${NAMESPACE} > ${CRINTSPATH}/describe.log
@@ -39,7 +40,7 @@ do
 		done
 
 		# Get other resource data.
-        APIRESOURCES=(configmaps routes roles rolebindings serviceaccounts services deployments)
+        APIRESOURCES=(configmaps routes roles rolebindings serviceaccounts services deployments replicasets)
 		for APIRESOURCE in ${APIRESOURCES[@]}
 		do
 
@@ -69,7 +70,7 @@ do
 
 	for RESOURCE in ${RESOURCES[@]}
 	do
-	    RESPATH=${LOGS_DIR}/${CLUSTERRESDIR}/${APIRESOURCE}/${RESOURCE}
+	    RESPATH=${LOGS_DIR}/${CRW_DIR}/${CLUSTERRESDIR}/${APIRESOURCE}/${RESOURCE}
 		mkdir -p ${RESPATH}
 		${BIN} describe ${APIRESOURCE} ${RESOURCE} > ${RESPATH}/describe.log
 		${BIN} get ${APIRESOURCE} ${RESOURCE} -o=yaml > ${RESPATH}/get.yaml
@@ -84,7 +85,7 @@ do
 
 	for RESOURCE in ${RESOURCES[@]}
 	do
-	    RESPATH=${LOGS_DIR}/${CLUSTERRESDIR}/${APIRESOURCE}/${RESOURCE}
+	    RESPATH=${LOGS_DIR}/${CRW_DIR}/${CLUSTERRESDIR}/${APIRESOURCE}/${RESOURCE}
 		mkdir -p ${RESPATH}
 		${BIN} describe ${APIRESOURCE} ${RESOURCE} > ${RESPATH}/describe.log
 		${BIN} get ${APIRESOURCE} ${RESOURCE} -o=yaml > ${RESPATH}/get.yaml

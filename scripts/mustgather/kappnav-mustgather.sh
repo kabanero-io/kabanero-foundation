@@ -8,7 +8,7 @@ set -Euo pipefail
 # operator.  That's the component we're searching for currently.
 COMPONENT="kappnav.io"
 BIN=oc
-LOGS_DIR="${LOGS_DIR:-kappnav-debug}"
+LOGS_DIR="${LOGS_DIR:-kabanero-debug}"
 
 # Describe and Get all api resources of component across cluster
 

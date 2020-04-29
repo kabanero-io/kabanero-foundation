@@ -23,8 +23,8 @@ echo "Collecting Knative information."
 echo "Collecting Tekton information."
 ./tekton-mustgather.sh
 
-echo "Collecting Eclipse Che information."
-./che-mustgather.sh
+echo "Collecting CodeReady Workspaces information."
+./codeready-workspaces-mustgather.sh
 
 echo "Collecting kAppNav information."
 ./kappnav-mustgather.sh

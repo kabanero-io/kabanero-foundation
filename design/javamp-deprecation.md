@@ -3,17 +3,17 @@
 ## Key Concepts / Background
 - Kabanero hasn't had any guidelines for deprecating an application stack, so this design will describe a best practice for deprecation.
 
-- The Java Microprofile community has refactored the Java cloud native  application stack to provide many improvements -- delivered as a new stack: the Open Liberty application stack, which has already been featured in Kabanero.  New Java cloud native applications should now leverage the Java Open Liberty application stack.
+- The Java Microprofile community has refactored the Java cloud native  application stack to provide many improvements -- delivered as a new stack: the Open Liberty application stack.  The Open Liberty application stack has already been featured in Kabanero.  New Java cloud native applications should now leverage the Java Open Liberty application stack.
 
 - The Java Microprofile application stack maintained in Kabanero is derived from the similar stack at Appsody.  Kabanero will inherit the stack metadata which marks the stack deprecated, as well as the container changes which will print deprecated messages as part of the application start up.  This is a best practice.  The deprecation marker and start up messages indicates to any user of the stack that they should start making plans to change technologies.
 
-- The Java Microprofile application stack will continue to be maintained for period of time as determined by the stack provider.  A minimum of 3 milestones is considered a best practice, although some stack providers may choose to maintain deprecated stacks longer.
+- The Java Microprofile application stack will continue to be maintained for period of time as determined by the stack provider.  A minimum of 3 milestones is considered a best practice, although some stack providers may choose a different transitional period.
 
 - The default Kabanero stack-hub index will be updated to remove the Java Microprofile application stack.  Users wishing to continue to leverage the Java Microprofile application stack can add the stack index to their own customized stack-hub for usage with Kabanero.
 
 ## User stories
 
-- The Kabanero community would like to have a process for deprecating features including application stacks.
+- The Kabanero community would like to have a process for deprecating  application stacks.
 
 - The Java Microprofile application stack provider would like to deprecate the Java Microprofile application stack.
 
@@ -107,7 +107,9 @@ None.
 
 Products based on Kabanero, which need to continue to deliver the Kabanero Java MicroProfile application stack can find the stack definition in the kabanero-collection hub, and the Kabanero community will continue to publish updates to the Java MicroProfile application stack container to Docker hub for a period of time.
 
+It is decided that for the time being, we would not enhance the Kabanero operator, REST API and CLI to indicate that a stack is marked deprecated.  The Appsody CLI indicates to the developer that the stack is deprecated, and presumably the enterprise would have a plan for removing the stack.
+
 #  - Discussion:  
 
-Should the Kabanero CLI and Stack CR indicate that a stack is deprecated?
+
 
